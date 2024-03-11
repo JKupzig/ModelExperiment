@@ -38,7 +38,7 @@ basin.climate <- init.climate(
 
 basin.water_use <- init.wateruse(
   basin,
-  sim_start = START, sim_end =END,
+  sim_start = START, sim_end = END,
   wateruse_setting = 0
   )
 
