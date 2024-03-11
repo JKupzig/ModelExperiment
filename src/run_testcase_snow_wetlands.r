@@ -160,8 +160,8 @@ dev.off()
 #### KGE evaluation #####
 
 simulated_discharges <- list(
-  "higher snow storage" = discharge_ref_less_snow,
-  "lower snow storage" = discharge_ref_more_snow,
+  "lower snow storage" = discharge_ref_less_snow,
+  "higher snow storage" = discharge_ref_more_snow,
   "standard run" = discharge_standard_run,
   "standard run (fast)" = discharge_standard_run_fast)
 
@@ -191,11 +191,11 @@ complete_data <- data.frame(date = qobs$Date,
 seasonal_data <- complete_data %>%
   mutate(month = format(date, "%m")) %>%
   group_by(month) %>%
-  summarise_all(mean, na.rm = TRUE) %>%
+  summarise_all(median, na.rm = TRUE) %>%
   select(!c("date")) %>%
   tidyr::pivot_longer(cols = -c("month")) %>%
   ggplot() +
-  geom_line(aes(x = month, y = value, group = name, color=name)) +
+  geom_line(aes(x = month, y = value, group = name, color = name)) +
   scale_colour_manual(
     values = c("blue", "#00AFBB", "#E7B800", "#FC4E07", "black")) +
   theme_bw()
