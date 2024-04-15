@@ -12,6 +12,10 @@ DISCHARGE_DATA_PATH <- r"(C:\Users\jenny\MyProject_sciebo\GRDC_2020\Rohdaten)"
 START <- "01.01.1980"
 END <- "31.12.1989"
 
+PLOT_3 <- "seasonal_evaluation_snow_in_wetlands.png"
+PLOT_2 <- "discharges_storage_wetlands.png"
+PLOT_1 <- "snow_storage_wetlands.png"
+
 settings_with_snow_in_wetlands <- init.settings(snow_in_wetlands = "on")
 settings_no_snow_in_wetlands <- init.settings(snow_in_wetlands = "off")
 warmup_years <- 10
@@ -125,7 +129,7 @@ discharge_ref_more_snow <- Q.convert_mmday_m3s(
 
 #### Plotting #####
 
-png("./plots/snow_storage_wetlands.png")
+png(file.path("./plots", PLOT_1))
 x_axis <- 1:length(basin.run$SimPeriod)
 
 plot(x_axis, apply(more_snow$routing$locWetland$Snow, 1, mean),
@@ -140,18 +144,18 @@ dev.off()
 
 lwd <- 1.5
 
-png("./plots/discharges_storage_wetlands.png", width=15, height=12, units="cm", res=300)
-plot(qobs$Date, qobs$Value, type = "l", ylim = c(0, 600),
+png(file.path("./plots", PLOT_2), width=15, height=12, units="cm", res=300)
+plot(observed_discharge$Date, observed_discharge$Value, type = "l", ylim = c(0, 600),
      ylab = ("Q in m3/s"), xlab = "", col = "black", lwd=2)
 
-lines(qobs$Date, discharge_ref_less_snow, col = "maroon", lwd = lwd)
-lines(qobs$Date, discharge_ref_more_snow, col = "cornflowerblue", lwd = lwd)
-lines(qobs$Date, discharge_standard_run, col = "forestgreen", lwd = lwd)
-lines(qobs$Date, discharge_standard_run_fast, col = "green", lwd = lwd)
+lines(observed_discharge$Date, discharge_ref_less_snow, col = "maroon", lwd = lwd)
+lines(observed_discharge$Date, discharge_ref_more_snow, col = "cornflowerblue", lwd = lwd)
+lines(observed_discharge$Date, discharge_standard_run, col = "forestgreen", lwd = lwd)
+lines(observed_discharge$Date, discharge_standard_run_fast, col = "green", lwd = lwd)
 
 
 legend("topleft",
-       c("observed", "higher snow storage", "lower snow storage", "standard run", "standard run (fast)"),
+       c("observed", "lower snow storage", "higher snow storage", "standard run", "standard run (fast)"),
        col = c("black", "maroon", "cornflowerblue", "forestgreen", "green"),
        lty = 1,
        horiz = FALSE, cex = 0.8, bty = "n")
@@ -169,8 +173,8 @@ table <- data.frame(matrix(nrow = length(names(simulated_discharges)),
                            ncol = 5))
 row <- 1
 for (sim in simulated_discharges){
-  df_sim <- data.frame(Date = qobs$Date, Sim = sim)
-  kge <- Q.calc_quality(df_obs=qobs, df_sim = df_sim, type = "KGE")
+  df_sim <- data.frame(Date = observed_discharge$Date, Sim = sim)
+  kge <- Q.calc_quality(df_obs = observed_discharge, df_sim = df_sim, type = "KGE")
   table[row, 1] <- names(simulated_discharges)[row]
   table[row, 2] <- kge$a
   table[row, 3] <- kge$b
@@ -184,8 +188,8 @@ print(table)
 
 ### seasonal evaluation ####
 
-complete_data <- data.frame(date = qobs$Date,
-                            observed = qobs$Value,
+complete_data <- data.frame(date = observed_discharge$Date,
+                            observed = observed_discharge$Value,
                             simulated_discharges)
 
 seasonal_data <- complete_data %>%
@@ -197,8 +201,13 @@ seasonal_data <- complete_data %>%
   ggplot() +
   geom_line(aes(x = month, y = value, group = name, color = name)) +
   scale_colour_manual(
-    values = c("blue", "#00AFBB", "#E7B800", "#FC4E07", "black")) +
+    values = c(
+      "observed"="black",
+     "lower.snow.storage"="cornflowerblue",
+     "higher.snow.storage"="maroon",
+     "standard.run"="forestgreen",
+     "standard.run..fast."="green")) +
   theme_bw()
 
-  ggsave("./plots/seasonal_evaluation_snow_in_wetlands.png")
+  ggsave(file.path("./plots", PLOT_3))
 
