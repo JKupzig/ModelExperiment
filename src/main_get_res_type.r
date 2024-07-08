@@ -12,6 +12,8 @@ basins <- unf.readunf(BASINS, CONTINENT)
 reservoirs_in_data <- reservoir_types[basins != 0 & reservoir_area > 0]
 table(reservoirs_in_data)
 
+basin_ids <- unique(abs(basins[basins != 0 & reservoir_area >= 2]))
+
 # 1: hanasaki - irrigation
 # 2-7: dynamicOpt_1
 

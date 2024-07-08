@@ -1,1 +1,6 @@
 plots/**
+.Rproj.**
+.Rproj.user
+data/**
+ModelExperiment-1.Rproj
+.Rhistory

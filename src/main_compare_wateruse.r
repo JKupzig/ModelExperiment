@@ -1,12 +1,12 @@
 
+rm(list=ls())
 library(ggplot2)
 library(dplyr)
 library(gridExtra)
 
 ROOT <- "./data/KGE_results/cal_result_benchmarks_model_m%i.txt"
-models <- c(0,1,2,3,4,6,8)
+models <- seq(0,19,1)
 
-attributes <- read.table(ATTRIBUTES, header=T, sep="\t")
 
 model <- 1
 cal_results <- read.table(sprintf(ROOT, model), sep="\t", header=T)
@@ -51,17 +51,19 @@ compare_models_wateruse <- function(cal_results, reference_column, to_compare_co
 # water use
 data_1 <- compare_models_wateruse(cal_results, "model_m1", "model_m0")
 data_2 <- compare_models_wateruse(cal_results, "model_m2", "model_m3")
+data_3 <- compare_models_wateruse(cal_results, "model_m8", "model_m4")
+data_4 <- compare_models_wateruse(cal_results, "model_m9", "model_m5")
+data_5 <- compare_models_wateruse(cal_results, "model_m10", "model_m7")
 
-all_together <- rbind(data_1, data_2)
+all_together <- rbind(data_1, data_2, data_3, data_4, data_5)
+all_together <- all_together[(abs(all_together$value) > 0.01),]
 ggplot(all_together, aes(x=label, y=value, col=label)) +
   geom_boxplot() +
   scale_color_manual(values=hcl.colors(length(unique(all_together$label)), "spectral")) +
-  theme_classic()
-  #coord_cartesian(xlim = c(0, 1))
+  theme_bw() +
+  coord_cartesian(ylim = c(-1, 1))
 
-delta_3 <- cal_results$model_m8 - cal_results$model_m4
-delta_4 <- cal_results$model_m9 - cal_results$model_m5
-delta_5 <- cal_results$model_m10 - cal_results$model_m7
+
 
 
 ggplot(data, aes(x=delta, group=label, col=label) ) +
@@ -70,7 +72,4 @@ ggplot(data, aes(x=delta, group=label, col=label) ) +
 
 boxplot(list("all"=delta_1, "affected"=delta_1_intersting))
 
-delta_2 <- cal_results$model_m2 - cal_results$model_m3
-delta_3 <- cal_results$model_m8 - cal_results$model_m4
-delta_4 <- cal_results$model_m9 - cal_results$model_m5
-delta_5 <- cal_results$model_m10 - cal_results$model_m7
+

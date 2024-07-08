@@ -81,10 +81,16 @@ RasterTempl <- watergap3data::GCRC_list[[cont]]
 crs2use <- raster::crs(RasterTempl)
 name_basins <- sprintf("G_BASCALIB_GRDC_%s.UNF0", cont)
 
+problematic <- c(4113305, 4113321, 4119070, 4119201, 4119461)
 basins <- as.vector(watergap3data::unf.readunf(file.path(CALIB_FOLDER, name_basins), cont))
 basins[(!basins %in% stations_to_use) & (!is.na(basins))] <- NA
 for (basin_id in stations_to_use){
-  value_to_set <- attributes$aridity[attributes$grdc_ids == basin_id]
+  if (basin_id %in% problematic){
+    value_to_set <- 1
+  } else {
+    value_to_set <- attributes$localWetlands[attributes$grdc_ids == basin_id]
+  }
+
   basins[(basins == basin_id) & (!is.na(basins))] <- value_to_set
 }
 

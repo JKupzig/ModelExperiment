@@ -1,0 +1,481 @@
+
+rm(list=ls())
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+library(grid)
+
+
+ROOT <- "./data/KGE_results/cal_result_benchmarks_model_m%i.txt"
+ROOT_100 <- "./data/KGE_results/cal_result_benchmarks_model_m%i_wetlStorage100.txt"
+models <- seq(8,19,)
+
+
+cal_results <- read.table(sprintf(ROOT, models[1]), sep="\t", header=T)
+cal_results <- data.frame(station=cal_results[,names(cal_results) %in% c("station")])
+for (model in models){
+  model_result <- read.table(sprintf(ROOT, model), sep="\t", header=T)
+  cal_results[[sprintf("model_m%i", model)]] <- model_result$kge_val
+}
+
+for (model in models){
+  model_result <- read.table(sprintf(ROOT_100, model), sep="\t", header=T)
+  cal_results[[sprintf("model_m%i_100", model)]] <- model_result$kge_val
+}
+
+
+compare_models_snow <- function(cal_results,
+                                reference_column,
+                                to_compare_column,
+                                label_to_use,
+                                min_quality = 0.2){
+
+
+  station_sufficient_quality <- cal_results$station[
+    cal_results[reference_column] > min_quality |
+      cal_results[to_compare_column] > min_quality]
+
+  selected_stations <- cal_results$station %in% station_sufficient_quality
+  cal_results_intersting <- cal_results[selected_stations,]
+
+  delta <- cal_results_intersting[[to_compare_column]]  -
+    cal_results_intersting[[reference_column]]
+
+  data <- data.frame("value"= delta,
+                     "label"= label_to_use,
+                     "basin_id"= cal_results_intersting$station)
+
+  return(data)
+}
+
+
+# water use
+#reference: no snow -> positive values --> increasing perfomance!
+data_1 <- compare_models_snow(cal_results, "model_m8_100", "model_m8", "lakes + static")
+data_2 <- compare_models_snow(cal_results, "model_m9_100", "model_m9", "lakes + static + snow")
+data_3 <- compare_models_snow(cal_results, "model_m10_100", "model_m10", "lakes + variable")
+data_4 <- compare_models_snow(cal_results, "model_m11_100", "model_m11", "lakes + variable + snow")
+data_5 <- compare_models_snow(cal_results, "model_m12_100", "model_m12", "hanasaki + static")
+data_6 <- compare_models_snow(cal_results, "model_m13_100", "model_m13", "hanasaki + static + snow")
+data_7 <- compare_models_snow(cal_results, "model_m14_100", "model_m14", "hanasaki + variable")
+data_8 <- compare_models_snow(cal_results, "model_m15_100", "model_m15", "hanasaki + variable + snow")
+data_9 <- compare_models_snow(cal_results, "model_m16_100", "model_m16", "schneider + static")
+data_10 <- compare_models_snow(cal_results, "model_m17_100", "model_m17", "schneider + static + snow")
+data_11 <- compare_models_snow(cal_results, "model_m18_100", "model_m18", "schneider + variable")
+data_12 <- compare_models_snow(cal_results, "model_m19_100", "model_m19", "schneider + variable + snow")
+
+
+all_together <- rbind(data_1, data_2, data_3, data_4, data_5, data_6,
+                      data_7, data_8, data_9, data_10, data_11, data_12)
+
+all_together %>%
+  group_by(label) %>%
+  mutate(count = n()) %>%
+  filter(abs(value) > 0.01) %>%
+  mutate(count_with_change = n()) %>%
+  ggplot(., aes(x=label, y=value)) +
+  geom_boxplot(fill="grey") +
+  geom_violin(alpha=0.2) +
+  geom_hline(yintercept=0, col="firebrick", linetype="dashed", linewidth=1.2) +
+  scale_color_manual(values=hcl.colors(length(unique(all_together$label)), "Berlin")) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  geom_label(aes(label= count , y = 0.48), # mean + 0.1 <- change this to move label up and down
+             size = 4, position = position_dodge(width = 0.75)) +
+  geom_label(aes(label= count_with_change , y = 0.39), # mean + 0.1 <- change this to move label up and down
+             size = 4, position = position_dodge(width = 0.75)) +
+  labs(x="",
+       y="\u0394KGE") +
+  coord_cartesian(ylim=c(-1, 0.45))
+
+ggsave("./plots/MC_wetlands.png", units="cm", width=16, height=12, dpi=300)
+
+######################
+table <- all_together %>%
+  mutate(group=
+           ifelse(value >= 0.1, "better",
+                  ifelse(value < 0.1 & value > 0.01, "moderately better",
+                         ifelse(value <= 0.01 & value >= -0.01, "no change",
+                                ifelse(value < -0.01 & value > -0.1, "moderately worse", "worse"
+                                ))))
+  ) %>%
+  mutate(group = factor(group, levels = c("worse", "moderately worse",
+                                          "no change",
+                                          "moderately better", "better"))) %>%
+  tidytable::group_by(group, label) %>%
+  tidytable::count(group) %>%
+  tidytable::group_by(group) %>%
+  summarise(min = min(n),
+            Q25 = quantile(n, 0.25),
+            median = median(n),
+            mean = median(n),
+            Q75 = quantile(n, 0.75),
+            max = max(n))
+
+dev.off()
+png("./plots/MC_wetlands_table.png", units="cm", width=16, height=12, res=300)
+table_to_save <- tableGrob(table)
+grid.draw(table_to_save)
+dev.off()
+
+################################################################################
+# lookint at example: data_1
+data <- readRDS("./data/SI_original.rds")
+
+sensitive_stations <- data_1$basin_id[abs(data_1$value) > 0.01]
+si_id <- 1:16
+interesting_stations <- dimnames(data)[[3]] %in% unique(sensitive_stations)
+cum_values <- data[c(1,4), si_id, interesting_stations]
+relative_differences <- NULL
+for (slice in 1:dim(cum_values)[3]){
+  magnitude <- (cum_values[1,1:3,slice] - cum_values[2,1:3,slice]) /
+    cum_values[2,1:3,slice] * 100
+  rest <- cum_values[1,4:16,slice] - cum_values[2,4:16,slice]
+
+  relative_differences <- rbind(relative_differences, c(magnitude, rest))
+}
+
+relative_differences <- as.data.frame(relative_differences)
+relative_differences$basins <- dimnames(data)[[3]][interesting_stations]
+differences_long <- relative_differences %>%
+  pivot_longer(., cols=-basins) %>%
+  mutate(plot_type = ifelse(name %in% c("mgn_l", "mgn_a", "mgn_h"), "magnitude (%)",
+                            ifelse(name %in% c("frq_l", "frq_h"), "frequency (d)",
+                                   ifelse(name %in% c("dur_l", "dur_h"), "duration (d)",
+                                          ifelse(name %in% c("pearson", "sd", "mean"), "KGE components (-)",
+                                                 ifelse(name %in% c("monthly_pearson", "monthly_sd", "monthly_mean"), "monthly KGE components (-)", "overall quality (-)"
+                                                 )))))) %>%
+  mutate(coloring = ifelse(name %in% c("mgn_l", "frq_l", "dur_l"), "lowflow",
+                           ifelse(name %in% c("mgn_h", "frq_h", "dur_h"), "highflow",
+                                  ifelse(name %in% c("pearson", "monthly_pearson"), "pearson",
+                                         ifelse(name %in% c("sd", "monthly_sd"), "variation",
+                                                ifelse(name %in% c("mean", "monthly_mean"), "mean", name))))))
+
+
+differences_long %>%
+  dplyr::filter(! name %in% c("mgn_a", "monthly_nse")) %>%
+  ggplot(., aes(x=basins, y = value, group=name, col=coloring)) +
+  geom_point() +
+  theme_classic() +
+  facet_wrap(.~plot_type, scales="free_y") +
+  scale_color_manual("type", values=hcl.colors(8, "Berlin")) +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+
+ggsave("./plots/MC_wetlands_SI.png", units="cm", width=16, height=12, dpi=300)
+
+#########################################
+
+# learning about the attributes
+set.seed(12)
+
+library(dplyr)
+library(caret)
+
+
+labeled_data <- all_together %>%
+  mutate(group=
+           ifelse(value >= 0.1, "better",
+                  ifelse(value < 0.1 & value > 0.01, "moderately better",
+                         ifelse(value <= 0.01 & value >= -0.01, "no_change",
+                                ifelse(value < -0.01 & value > -0.1, "moderately worse", "worse"
+                                ))))
+  ) %>%
+  mutate(group = factor(group, levels = c("worse", "moderately worse",
+                                          "no_change",
+                                          "moderately better", "better")))
+
+attributes <- read.table("./data/reduced_basin_attributes.txt", sep="\t", header=T)
+attributes$basin_id <- paste0("X", attributes$grdc_ids)
+labeled_data <- merge(labeled_data, attributes, by="basin_id", all.x=T)
+
+find_hull <- function(df) df[chull(df$reservoir_area/df$basin_size, df$sum_precipitation), ]
+hulls <- plyr::ddply(labeled_data, "group", find_hull)
+
+labeled_data %>%
+  ggplot(., aes(x=reservoir_area/basin_size, y=sum_precipitation, col=group)) +
+  geom_point() +
+  geom_polygon(data = hulls, alpha = 0.4, aes(fill=group)) +
+  scale_fill_manual(values=hcl.colors(5, "Hawaii")) +
+  scale_colour_manual(values=hcl.colors(5, "Hawaii")) +
+  theme_classic()
+
+labeled_data$group <- as.character(labeled_data$group)
+labeled_data$group[labeled_data$group == "better"] <- "change"
+labeled_data$group[labeled_data$group == "worse"] <- "change"
+labeled_data$group[labeled_data$group == "moderately worse"] <- "change"
+labeled_data$group[labeled_data$group == "moderately better"] <- "change"
+labeled_data$group <- factor(labeled_data$group, levels = c("no_change", "change"))
+
+#labeled_data[labeled_data == 0] <- 0.001
+reduced_labeled_data <- distinct(labeled_data[sample(1:nrow(labeled_data)),],
+                                 basin_id, .keep_all = T)
+data_split <- rsample::initial_split(reduced_labeled_data, prop = 0.5)
+train_data <- rsample::training(data_split)
+test_data <- rsample::testing(data_split)
+
+#führt zu Verschlechterung der Ergebnisse!
+scaler <- caret::preProcess(train_data, method=c("center", "scale"))
+scaled_train_data <- predict(scaler, train_data)
+scaled_test_data <- predict(scaler, test_data)
+table(scaled_train_data$group)
+
+ctrl <- trainControl(method = "repeatedcv",
+                     number = 20,
+                     repeats = 3,
+                     classProbs = TRUE,
+                     sampling="down",
+)
+
+
+
+elements_to_check <- c("mean_precipitation_as_snow",
+                       "basin_size", "aridity", "sum_precipitation",
+                       "mean_temperature", "batjes", "reservoir_area",
+                       "water_stress", "global_waterbodies")
+
+variance <- list()
+bias <- list()
+label <- c()
+model_in <- c("localWetlands")
+for (element in elements_to_check){
+  model_in <- c(model_in, element)
+  label <- c(label, paste(model_in, collapse="+"))
+  print(model_in)
+  ids_to_use <- which(names(train_data) %in% model_in)
+
+  for (caret_model in c("multinom", "rf", "nnet"))
+  {
+    bias_in_model <- c()
+    #for (i in 1:10){
+    fit <- caret::train(y=scaled_train_data$group,
+                        x=as.data.frame(scaled_train_data)[,ids_to_use],
+                        method = caret_model,
+                        verbose = FALSE,
+                        trace=FALSE,
+                        trControl = ctrl,
+                        metric = "Accuracy")
+
+    test_data$prediction_rf <-predict(fit, scaled_test_data)
+    metric <- caret::confusionMatrix(data=predict(fit, scaled_test_data),
+                                     reference=scaled_test_data$group)
+    bias_in_model <- c(bias_in_model, metric$overall[1])
+    # }
+    if (is.null(bias[[caret_model]])){
+      bias[[caret_model]] <- c(mean(bias_in_model))
+      variance[[caret_model]] <- c(var(bias_in_model))
+    } else {
+      bias[[caret_model]] <- c(bias[[caret_model]], mean(bias_in_model))
+      variance[[caret_model]] <- c(variance[[caret_model]], var(bias_in_model))
+    }
+  }
+}
+
+plot(1:length(elements_to_check), bias$multinom, col="firebrick", type="l", lwd=2, ylim=c(0.2, 0.9))
+lines(1:length(elements_to_check), bias$rf, col="forestgreen", lwd=2)
+lines(1:length(elements_to_check), bias$nnet, col="cornflowerblue", lwd=2)
+
+# randomforest seem to be most adequate:
+fit <- caret::train(y=scaled_train_data$group,
+                    x=as.data.frame(scaled_train_data)[,ids_to_use],
+                    method = "rf",
+                    verbose = T,
+                    trControl = ctrl,
+                    metric = "Accuracy",
+                    importance=T)
+
+caret::varImp(fit)
+test_data$prediction_rf <-predict(fit, scaled_test_data)
+metric <- caret::confusionMatrix(data=predict(fit, scaled_test_data),
+                                 reference=scaled_test_data$group)
+metric$table
+metric$overall #about 85%
+
+
+
+#
+#
+# ROOT_100d <- "./data/KGE_results/cal_result_benchmarks_model_m%i_wetlStorage100.txt"
+# ROOT_10d <- "./data/KGE_results/cal_result_benchmarks_model_m%i.txt"
+# models <- seq(4,19,1)
+#
+#
+#
+# cal_results_10d <- read.table(sprintf(ROOT_10d, models[1]), sep="\t", header=T)
+# cal_results_10d <- data.frame(station=cal_results_10d[,names(cal_results_10d) %in% c("station")])
+# cal_results_100d <- cal_results_10d
+#
+# for (model in models){
+#   model_result <- read.table(sprintf(ROOT_10d, model), sep="\t", header=T)
+#   cal_results_10d[[sprintf("model_m%i", model)]] <- model_result$kge_val
+#
+#   model_result <- read.table(sprintf(ROOT_100d, model), sep="\t", header=T)
+#   cal_results_100d[[sprintf("model_m%i", model)]] <- model_result$kge_val
+# }
+#
+#
+# model_name <- "model_m19"
+# mask <- (cal_results_10d[[model_name]] > 0.2 | cal_results_100d[[model_name]] > 0.2)
+# boxplot(list("10d"=cal_results_10d[[model_name]][mask],
+#          "100d"=cal_results_100d[[model_name]][mask]))
+#
+# compare_models_wetl <- function(models_to_use,
+#                                 reference_set,
+#                                 to_compare_set,
+#                                 min_quality = 0.2){
+#
+#   model_names = paste0("model_m", models_to_use)
+#
+#   ATTRIBUTES <- "./data/reduced_basin_attributes.txt"
+#   attributes <- read.table(ATTRIBUTES, header=T, sep="\t")
+#
+#   nice_station_ref <- reference_set %>%
+#     filter_at(vars(starts_with("model")), any_vars(. >= min_quality))
+#
+#   nice_station_comp <- to_compare_set %>%
+#     filter_at(vars(starts_with("model")), any_vars(. >= min_quality))
+#
+#   nice_stations <- unique(c(nice_station_comp$station, nice_station_ref$station))
+#
+#   selected_stations <- reference_set$station %in% nice_stations
+#
+#   red_reference_set <- reference_set[selected_stations,]
+#   red_to_compare_set <- to_compare_set[selected_stations,]
+#
+#   data <- data.frame("basin_id"= red_to_compare_set$station)
+#
+#   for (model in model_names){
+#     delta <- red_to_compare_set[[model]] - red_reference_set[[model]]
+#     data[[model]] <- delta
+#   }
+#
+#   return(data)
+# }
+#
+# ATTRIBUTES <- "./data/reduced_basin_attributes.txt"
+# attributes <- read.table(ATTRIBUTES, header=T, sep="\t")
+# attributes$grdc_ids <- paste0("X", attributes$grdc_ids)
+#
+# cal_results_10d <- read.table(sprintf(ROOT_10d, models[1]), sep="\t", header=T)
+# cal_results_10d <- data.frame(station=cal_results_10d[,names(cal_results_10d) %in% c("station")])
+# cal_results_100d <- cal_results_10d
+#
+# for (model in models){
+#   model_result <- read.table(sprintf(ROOT_10d, model), sep="\t", header=T)
+#   cal_results_10d[[sprintf("model_m%i", model)]] <- model_result$kge_val
+#
+#   model_result <- read.table(sprintf(ROOT_100d, model), sep="\t", header=T)
+#   cal_results_100d[[sprintf("model_m%i", model)]] <- model_result$kge_val
+# }
+#
+#
+#
+#
+#
+# red_100d_all <- cal_results_100d[sufficient,]
+# problem_ids <- red_100d_all$station[red_100d < 0.5 & red_10d < 0.2]
+# cold_wetlands <- attributes$grdc_ids[attributes$localWetlands > 20 &
+#                                        attributes$mean_precipitation_as_snow > 0.2]
+#
+# atribute_to_examine <- "reservoir_area"
+# attributes$ids <- seq(1,330,1)
+# plot(attributes$ids[attributes$grdc_ids %in% cold_wetlands],
+#      attributes[[atribute_to_examine]][attributes$grdc_ids %in% cold_wetlands])
+#
+# points(attributes$ids[attributes$grdc_ids %in% problem_ids],
+#        attributes[[atribute_to_examine]][attributes$grdc_ids %in% problem_ids],
+#        col="firebrick", pch=17)
+#
+#
+#
+#
+# model_result_100d <- read.table(sprintf(ROOT_100d, 15), sep="\t", header=T)
+# model_result_10d <- read.table(sprintf(ROOT_10d, 15), sep="\t", header=T)
+#
+#
+# par(mfrow=c(1,4))
+# stations_with_wetlands <- attributes$grdc_ids[attributes$localWetlands > 5]
+#
+# boxplot(list("a (10d)"= model_result_10d$a_val[model_result_100d$station %in% stations_with_wetlands],
+#              "a (100d)" = model_result_100d$a_val[model_result_100d$station %in% stations_with_wetlands]),
+#         outline=F,
+#         ylim=c(0, 2))
+# title("all basins with local wetlands > 5%", line = 1)
+#
+# boxplot(list("b (10d)"= model_result_10d$b_val[model_result_100d$station %in% stations_with_wetlands],
+#              "b (100d)" = model_result_100d$b_val[model_result_100d$station %in% stations_with_wetlands]),
+#         outline=F,
+#         ylim=c(0, 2))
+#
+# boxplot(list("r (10d)"= model_result_10d$r_val[model_result_100d$station %in% stations_with_wetlands],
+#              "r (100d)" = model_result_100d$r_val[model_result_100d$station %in% stations_with_wetlands]),
+#         outline=F,
+#         ylim=c(0, 1))
+#
+# boxplot(list("kge (10d)"= model_result_10d$kge_val[model_result_100d$station %in% stations_with_wetlands],
+#              "kge (100d)" = model_result_100d$kge_val[model_result_100d$station %in% stations_with_wetlands]),
+#         outline=F,
+#         ylim=c(0, 1))
+#
+# dev.off()
+# # water use
+# #reference: no snow -> positive values --> increasing perfomance!
+# data <- compare_models_wetl(models, cal_results_100d, cal_results_10d, 0.2)
+# my_table <- data %>%
+#   tidyr::pivot_longer(., cols=-basin_id) %>%
+#   group_by(name) %>%
+#   summarise(very_pos = sum(value > 0.1),
+#             very_neg = sum(value < -0.1),
+#             pos = sum(0.01 < value & value < 0.1),
+#             neg = sum(-0.1 < value & value < -0.01),
+#             no_change = sum(-0.01 < value & value < 0.01))
+#
+# data <- compare_models_wetl(models, cal_results_100d, cal_results_10d, 0.0)
+# my_table <- data %>%
+#   tidyr::pivot_longer(., cols=-basin_id) %>%
+#   group_by(name) %>%
+#   summarise(very_pos = sum(value > 0.1),
+#             very_neg = sum(value < -0.1),
+#             pos = sum(0.01 < value & value < 0.1),
+#             neg = sum(-0.1 < value & value < -0.01),
+#             no_change = sum(-0.01 < value & value < 0.01))
+#
+# apply(data[, names(data) != "basin_id"], 2, )
+# all_together <- rbind(data_1, data_2, data_3, data_4, data_5, data_5)
+# all_together <- all_together[(abs(all_together$value) > 0.01),]
+# length(unique(all_together$basin_id)) #77 out of 330 are affected
+# ggplot(all_together, aes(x=label, y=value, col=label)) +
+#   geom_boxplot() +
+#   scale_color_manual(values=hcl.colors(length(unique(all_together$label)), "spectral")) +
+#   theme_bw()
+#
+# ATTRIBUTES <- "./data/reduced_basin_attributes.txt"
+# attributes <- read.table(ATTRIBUTES, header=T, sep="\t")
+# attributes$grdc_ids <- paste0("X", attributes$grdc_ids)
+#
+# snow_info <- data.frame("model"= model_names,
+#                         "snow"= c("no", "no", "no", "no", "no",
+#                                   "yes", "no", "yes", "no",
+#                                   "yes", "yes", "no", "no",
+#                                   "yes", "no", "yes",
+#                                   "no", "yes", "no", "yes"))
+# cal_results %>%
+#   filter_at(vars(starts_with("model")), any_vars(. >= 0.2)) %>%
+#   left_join(attributes, join_by(station == grdc_ids)) %>%
+#   filter(localWetlands > 5) %>%
+#   select(., matches("model|station")) %>%
+#   tidyr::pivot_longer(., cols=-station) %>%
+#   filter(!name %in% c("model_m0", "model_m1", "model_m2", "model_m3")) %>%
+#   left_join(snow_info, join_by(name==model)) %>%
+#   mutate(name = factor(name, levels=model_names)) %>%
+#   ggplot(., aes(y=value, group=name, col=snow)) +
+#   ggtitle("30 % snow, 30 % wetlands, KGE_val > 0.2 (in any model)") +
+#   #stat_ecdf(geom="line") +
+#   geom_boxplot() +
+#   coord_cartesian(ylim = c(0, 2)) +
+#   theme_bw() +
+#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#
+# ggsave("./plots/appendix_validation_result_snow.png", units="cm", width=16, height=12, dpi=300)
+#
