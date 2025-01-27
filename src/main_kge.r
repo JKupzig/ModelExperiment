@@ -6,8 +6,8 @@ library(ggplot2)
 source("./src/helper/read_data.r")
 source("./src/helper/comparison.r")
 
-MIN_QUAL <- 0.4 #0.4 - 0.2
-MAX_QUAL <- NULL #NULL - 0.4
+MIN_QUAL <- 0.0 #0.4 - 0.2
+MAX_QUAL <- 0.4 #NULL - 0.4
 DUMMY <- NULL
 
 
@@ -15,7 +15,7 @@ for (column in c("a_val", "r_val", "b_val",
                  "logNSE_val", "KGE_mod_val", "NSE_val", "KGE_val", "d1_val")){
 
   print(column)
-  target_plot <- sprintf("./plots/overall_%s_min_kge_%f.png", column, MIN_QUAL)
+  target_plot <- sprintf("./plots/supplement/overall_%s_min_kge_%f.png", column, MIN_QUAL)
 
   ylabel = sprintf("\u0394%s", stringr::str_remove(column, "_val"))
 

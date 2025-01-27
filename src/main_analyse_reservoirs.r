@@ -12,7 +12,7 @@ files_to_plot_storages <- list.files(ROOT, pattern="*storage.csv")
 
 count <- 1
 for (file_to_plot_availability in files_to_plot_availability){
-
+  print(count)
 
   file_to_plot_storages <- files_to_plot_storages[count]
 
@@ -40,7 +40,7 @@ for (file_to_plot_availability in files_to_plot_availability){
 
     if (plot_nr == 1){
       y_min <- min(storage$hanasaki, storage$schneider, storage$as_lakes)
-      y_max <- max(storage$hanasaki, storage$schneider, storage$as_lakes)
+      y_max <- max(storage$hanasaki, storage$schneider, storage$as_lakes)*1.2
     }
 
     plot(storage$date, storage$hanasaki, type="l", col=alpha(datylon_map[4], 1.0), lwd=2,
@@ -56,7 +56,29 @@ for (file_to_plot_availability in files_to_plot_availability){
 
     if (plot_nr == 1){
       legend("topleft", legend=c("reservoir algorithm (V1)", "reservoir algorithm (V2)", "as lakes"),
-             col=c(datylon_map[4], datylon_map[1], datylon_map[6]), lty=1, lwd=2)
+             col=c(datylon_map[4], datylon_map[1], datylon_map[6]), lty=1, lwd=2, cex=0.8)
+      q95_lake <- round(quantile(storage$as_lakes, 0.95), 4)
+      q95_schneider <- round(quantile(storage$schneider, 0.95), 4)
+      q95_hanasaki <- round(quantile(storage$hanasaki, 0.95), 4)
+
+      q99_lake <- round(quantile(storage$as_lakes, 0.99), 4)
+      q99_schneider <- round(quantile(storage$schneider, 0.99), 4)
+      q99_hanasaki <- round(quantile(storage$hanasaki, 0.99), 4)
+
+      max_lake <- round(max(storage$as_lakes), 4)
+      max_schneider <- round(max(storage$schneider), 4)
+      max_hanasaki <- round(max(storage$hanasaki), 4)
+
+      legend(
+        'topright', ncol = 4L, title = '',
+        cex = 0.6,
+        legend = c(
+          '', 'as lakes', 'hanasaki', 'schneider',
+          'Q95', c(q95_lake, q95_hanasaki, q95_schneider),
+          'Q99', c(q99_lake, q99_hanasaki, q99_schneider),
+          'max', c(max_lake, max_hanasaki, max_schneider)
+        )
+      )
     }
   }
 

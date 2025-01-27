@@ -13,7 +13,7 @@ colors_to_use <- datylon_map[c(1,4,7)]
 
 
 basin_list <- list()
-for (row in 3:5){
+for (row in c(3)){
   basin_to_simulate <- basin_info[row,] #3-5 wierd in schneider
   example_basin <- list("grdc_no" = basin_to_simulate$grdc_no,
                         "corLong" = basin_to_simulate$long,
@@ -39,11 +39,13 @@ for (row in 3:5){
 }
 
 # look at tobique river - is there storage with overflow upstream of the reservoir?
-waterbodies <- (basin_list$"4125050"@G_GLOWET)
-waterbodies[basin_list$"4125050"@G_LAKAREA > 0] <- -1
-waterbodies[basin_list$"4125050"@G_RESAREA > 0] <- -2
-raster::plot(WaterGAPLite::basin.create_raster(waterbodies, basin_list$"4125050"))
-raster::plot(WaterGAPLite::basin.create_raster( basin_list$"4125050"@G_ALTITUDE, basin_list$"4125050"))
+waterbodies <- (basin_list$"4231620"@G_GLOWET)
+waterbodies[basin_list$"4231620"@G_LAKAREA > 0] <- -1
+waterbodies[basin_list$"4231620"@G_RESAREA > 0] <- -2
+raster::plot(WaterGAPLite::basin.create_raster(basin_list$"4231620"@G_LOCLAK, basin_list$"4231620"))
+raster::plot(WaterGAPLite::basin.create_raster(basin_list$"4231620"@G_LOCWET, basin_list$"4231620"))
+raster::plot(WaterGAPLite::basin.create_raster(waterbodies, basin_list$"4231620"))
+raster::plot(WaterGAPLite::basin.create_raster( basin_list$"4231620"@G_ALTITUDE, basin_list$"4231620"))
 
 # now comparing streams:
 no_res_discharge_all <- read.table("./data/evaluation/cal_result_discharges_model_m8_wetlStorage100.txt",
@@ -54,7 +56,7 @@ schneider_discharge_all <- read.table("./data/evaluation/cal_result_discharges_m
                                    sep="\t", header=T)
 
 limits <- c(NA, NA, 2000, 4000, 8000)
-for (basin_nr in c(3,4,5)){
+for (basin_nr in c(3)){
   loaded_basin_id <- basin_info[basin_nr,1]
 
   no_res_discharge <- no_res_discharge_all[[paste0("X", loaded_basin_id)]]

@@ -8,12 +8,11 @@ library(ggplot2)
 MIN_QUAL <- 0.4
 MAX_QUAL <- NULL
 
-plot_name_res <- sprintf("./plots/reservoirs_SI_%f.png", MIN_QUAL)
-plot_name <- sprintf("./plots/Overall_SI_%f.png", MIN_QUAL)
-data <- readRDS("./data/SI_ref_as_m8_100d.rds")
+plot_name_res <- sprintf("./plots/reservoirs_SI_%f_complete_validation_period.png", MIN_QUAL)
+plot_name <- sprintf("./plots/Overall_SI_%f_complete_validation_period.png", MIN_QUAL)
+data <- readRDS("./data/SI_ref_as_m8_100d_complete_validation_period.rds")
 kge_info <- read_benchmarks_all()
 
-data[c(13,17),6,dimnames(data)[[3]]== "X4125915"]
 
 base_model <- "8_wetlStorage100"
 comparison_models <- list(
@@ -26,7 +25,7 @@ comparison_models <- list(
 models_in_kge <- c(base_model, names(comparison_models))
 run_to_use <- names(kge_info) %in% models_in_kge
 
-behavioural_basins <- read_kge_and_define_good_basins(MIN_QUAL, MAX_QUAL)
+behavioural_basins <- read_kge_and_define_good_basins(min_kge=MIN_QUAL, max_kge=MAX_QUAL)
 
 reduced_data <- data[,,dimnames(data)[[3]] %in% behavioural_basins$behavioural]
 
@@ -57,15 +56,16 @@ delta_long <- delta_to_models %>%
   as.data.frame.table(.) %>%
   as.data.frame(.) %>%
   mutate(plot_type = ifelse(Var2 %in% c("mgn_l", "mgn_a", "mgn_h"), "magnitude (mm/d)",
-                     ifelse(Var2 %in% c("frq_l", "frq_h"), "frequency (d)",
+                     ifelse(Var2 %in% c("max"), "max (mm/d)",
+                     ifelse(Var2 %in% c("frq_l", "frq_h", "lowflow_events", "highflow_events"), "frequency (d)",
                      ifelse(Var2 %in% c("dur_l", "dur_h"), "duration (d)",
                      ifelse(Var2 %in% c("pearson", "sd", "mean"), "KGE components (-)",
                      ifelse(Var2 %in% c("monthly_pearson", "monthly_sd", "monthly_mean"), "monthly KGE components (-)",
                      ifelse(Var2 %in% c("kge", "monthly_kge"), "KGE (-)",
                             "not defined")
-                                                 )))))) %>%
-  mutate(coloring = ifelse(Var2 %in% c("mgn_l", "frq_l", "dur_l"), "low flow",
-                    ifelse(Var2 %in% c("mgn_h", "frq_h", "dur_h"), "high flow",
+                                                 ))))))) %>%
+  mutate(coloring = ifelse(Var2 %in% c("mgn_l", "frq_l", "dur_l", "lowflow_events"), "low flow",
+                    ifelse(Var2 %in% c("mgn_h", "frq_h", "dur_h", "max", "highflow_events"), "high flow",
                     ifelse(Var2 %in% c("pearson", "monthly_pearson"), "pearson",
                     ifelse(Var2 %in% c("sd", "monthly_sd"), "variation",
                     ifelse(Var2 %in% c("mean", "monthly_mean"), "mean",
@@ -73,7 +73,7 @@ delta_long <- delta_to_models %>%
                     ifelse(Var2 %in% c("kge"), "daily",
                            "not defined"))))))))
 data_to_plot <- delta_long %>%
-  dplyr::filter(! Var2 %in% c("mgn_a", "monthly_nse")) %>%
+  dplyr::filter(! Var2 %in% c("mgn_a", "monthly_nse", "max", "frq_l", "frq_h")) %>% #
   dplyr::filter(! plot_type %in% c("monthly KGE components (-)",
                                    "KGE (-)"
   )) %>%
@@ -126,18 +126,18 @@ ggsave(plot_name, units="cm", width=30, height=20, dpi=300)
 #find weird reservoir algorithm (V2) basins
 delta_long %>%
   filter(Var1 == "schneider_reservoirs") %>%
-  filter(Var2 == "mgn_h") %>%
-  filter(Freq > 0.1)
+  filter(Var2 == "max") %>%
+  filter(Freq > 100)
 
 delta_long %>%
-  filter(Var1 == "hanasaki_reservoirs") %>%
-  filter(Var2 == "dur_l") %>%
+  filter(Var1 == "schneider_reservoirs") %>%
+  filter(Var2 == "lowflow_events") %>%
   filter(Freq > 1)
 
 delta_long %>%
   filter(Var1 == "schneider_reservoirs") %>%
   filter(Var2 == "frq_h") %>%
-  filter(Freq > 1)
+  filter(Freq > 0.5)
 
 delta_long %>%
   filter(Var1 == "schneider_reservoirs") %>%
@@ -147,8 +147,8 @@ delta_long %>%
 #find weird reservoir algorithm (V1) basins
 delta_long %>%
   filter(Var1 == "hanasaki_reservoirs") %>%
-  filter(Var2 == "mgn_h") %>%
-  filter(Freq > 0.5)
+  filter(Var2 == "mgn_l") %>%
+  filter(Freq < -0.05)
 
 delta_long %>%
   filter(Var1 == "hanasaki_reservoirs") %>%

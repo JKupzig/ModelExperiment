@@ -17,15 +17,16 @@ MORE_ATTRIBUTES <- "./data/reduced_basin_attributes.txt"
 
 ID_INFO <-  r"(C:\Users\jenny\MyProject_sciebo\_Nina\Regionalization\R\data_availability\regionalization_watergap3/data/NEW_y.rds)"
 CHARACTERISTIC_LIST <- c("sum_prec", "mean_temp", "mean_precipitation_as_snow","aridity")
-LABELS_TO_USE <- c("Yearly~Precipitation~(mm)",
+LABELS_TO_USE <- c("Annual~Precipitation~(mm)",
                    "Mean~Temperature~('°C')",
                    "Precipitation~as~snow~('%')",
                    "Aridity~Index~('-')")
 
 
 data_to_plot = list()
-lower_thresholds <- list(0,0.4,0)
-higher_thresholds <- list(0.4, NULL, NULL)
+lower_thresholds <- list(0, 0.4, 0)
+higher_thresholds <- list(0.4,  NULL, NULL)
+# additional, behavioural, all
 
 for (basin_group in c(1,2,3)){
   behavioural <- read_kge_and_define_good_basins(
@@ -54,7 +55,7 @@ for (basin_group in c(1,2,3)){
   attributes <- attributes[attributes$station %in% behavioural_basins$station,]
   wetland_groups <- cut(attributes$localWetlands,
                         breaks = c(-0.1, 0.1, 5, 10, 20, 50, 100),
-                        labels = c("no smaller wetlands", "1-5%", "5-10%", "10-20%",
+                        labels = c("no local wetlands", "1-5%", "5-10%", "10-20%",
                                    "20-50%", "50-100%"))
   wetland_groups_df <- as.data.frame(table(wetland_groups))
 
@@ -76,12 +77,12 @@ for (basin_group in c(1,2,3)){
 }
 
 
-
+# additional, behavioural, all
 ggplot() +
-  geom_histogram(data_to_plot[[1]], mapping = aes(value,
+  geom_histogram(data_to_plot[[2]], mapping = aes(value,
                                                   fill = "behavioural"),
                  alpha = 1) +
-  geom_histogram(data_to_plot[[2]], mapping = aes(value,
+  geom_histogram(data_to_plot[[1]], mapping = aes(value,
                                                   fill = "additonal"),
                  alpha = 0.6) +
   facet_wrap(~name, scales = "free",

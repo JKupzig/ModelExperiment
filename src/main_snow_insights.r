@@ -35,7 +35,7 @@ if (!is_100d){
 attributes <- read.table("./data/reduced_basin_attributes.txt", sep="\t", header=T)
 
 TARGET <- "./plots/snow_insights_%s_%s_%f.png"
-
+TARGET3 <- "./plots/snow_insights2_%s_%s_%f.png"
 cal_results <- read.table(sprintf(ROOT_100, models[1]), sep="\t", header=T)
 cal_results <- data.frame(station=cal_results[,names(cal_results) %in% c("station")])
 
@@ -101,6 +101,20 @@ boxplot(list("worse"=labeled_data$globalLakes[labeled_data$group == "moderately 
         "better"=labeled_data$globalLakes[labeled_data$group == "moderately better" |
                                       labeled_data$group == "significantly better"]))
 
+
+sensitive_basins <- labeled_data[(labeled_data$mean_precipitation_as_snow > 0.2) &
+               (labeled_data$localWetlands > 10),]
+sensitive_basins %>%
+  ggplot(., aes(x=localWetlands, y=value)) +
+  xlab("Fraction of smaller wetlands (%)") +
+  ylab(("\u0394 Timing (-)")) +
+  geom_point() +
+  geom_hline(yintercept=0.01, col="darkgrey", lwd=.6) +
+  geom_hline(yintercept=-0.01, col="darkgrey", lwd=.6) +
+  geom_hline(yintercept=0.1, col="darkgrey", lwd=.6) +
+  xlim(10,75) +
+  theme_classic()
+ggsave(sprintf(TARGET3, suffix, metric, MIN_QUAL), units="cm", width=16, height=12, dpi=300)
 ### Plots for b)
 
 interesting_stations <- labeled_data$grdc_ids[labeled_data$group != "no change"]

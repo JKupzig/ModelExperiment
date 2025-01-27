@@ -71,9 +71,25 @@ waterbodies[irrigation > 0 & non_irrigation == 0]
 
 cal_results_ref <- read.table(sprintf(ROOT_100, 8), sep="\t", header=T)
 cal_results_hanasaki <- read.table(sprintf(ROOT_100, 12), sep="\t", header=T)
+cal_results_schneider <- read.table(sprintf(ROOT_100, 16), sep="\t", header=T)
+
+all_delta_hanasaki <- (cal_results_ref$KGE_val - cal_results_hanasaki$KGE_val)
+a = all_delta_hanasaki[cal_results_ref$station %in% c("X4136400", "X4115400", "X4125050", "X4125915")]
+b = cal_results_ref$station[cal_results_ref$station %in% c("X4136400", "X4115400", "X4125050", "X4125915")]
+data.frame(station=b, delta=a)
+
+all_delta_schneider <- (cal_results_ref$r_val - cal_results_schneider$r_val)
+a = cal_results_schneider[cal_results_ref$station %in%
+                            c("X4136400", "X4231620", "X4125025", "X4125050",
+                              "X4146180", "X4146210", "X4149405", "X4125915"), c(14,15,17,16)]
+b = cal_results_ref[cal_results_ref$station %in%
+                      c("X4136400", "X4231620", "X4125025", "X4125050",
+                        "X4146180", "X4146210", "X4149405", "X4125915"), c(1, 14,15,17,16)]
+data.frame(station=b[,1], hanasaki=b[1+1], schneider=a[1])
+
 
 all_delta <- (cal_results_ref$r_val[cal_results_ref$station %in% behavioural_basins$behavioural] -
-              cal_results_hanasaki$r_val[cal_results_hanasaki$station %in% behavioural_basins$behavioural])
+                cal_results_hanasaki$r_val[cal_results_hanasaki$station %in% behavioural_basins$behavioural])
 behavioural <- cal_results_ref[cal_results_ref$station %in% behavioural_basins$behavioural,]
 sensitive_stations <- behavioural[abs(all_delta) > 0.05,1]
 sensitive_stations_mask <- behavioural_basins$behavioural %in% sensitive_stations
