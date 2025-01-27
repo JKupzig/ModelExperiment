@@ -1,6 +1,7 @@
 # Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com.
 
 library(ggplot2)
+source("./src/helper/color_ramps.r")
 
 # Data can be found in https://www.naturalearthdata.com/downloads/110m-physical-vectors/110m-land/
 BASEMAP <- "./data/ne_110m_land"
@@ -15,7 +16,7 @@ if (file.exists(BASEMAP)) {
 
 
 polygons_behavioural <- raster::shapefile("./data/overview_map.shp")
-simple_palette <- c(datylon_map[2], datylon_map[6])
+simple_palette <- c(datylon_map[2], datylon_map[5])
 polygons_behavioural$simple_color <- cut(
     polygons_behavioural$layer,
     breaks = c(0, 1.9, 3),

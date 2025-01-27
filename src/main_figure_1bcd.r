@@ -63,18 +63,18 @@ for (basin_group in c(1, 2, 3)){
 
 
 ggplot() +
-  geom_histogram(data_to_plot[[2]], mapping = aes(value,
-                                                  fill = names[2]),
-                 alpha = 1) +
   geom_histogram(data_to_plot[[1]], mapping = aes(value,
                                                   fill = names[1]),
-                 alpha = 0.6) +
+                 alpha = 1) +
+  geom_histogram(data_to_plot[[2]], mapping = aes(value,
+                                                  fill = names[2]),
+                 alpha = 0.7) +
   facet_wrap(~name, scales = "free",
              labeller = label_parsed) +
   scale_fill_manual(name = "",
                     values = c(
                       "behavioural" = datylon_map[2],
-                      "additional" = datylon_map[6])) +
+                      "additional" = datylon_map[5])) +
   theme_bw() +
   ylab("Count (-)") +
   xlab("Characteristic value") +
