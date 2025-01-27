@@ -7,7 +7,7 @@ source("./src/helper/read_data.r")
 source("./src/helper/comparison.r")
 
 PLOT_PATTERN <- "./plots/supplement/Supplement_S2_%s_%s.png"
-additional <- TRUE
+additional <- FALSE
 
 for (column in c("r_val", "logNSE_val", "KGE_mod_val",
                  "NSE_val", "KGE_val", "d1_val")){
@@ -25,8 +25,16 @@ for (column in c("r_val", "logNSE_val", "KGE_mod_val",
     max_qual <- NULL
     name <- "behavioural"
   }
-  
+
+  figure_2 <- NULL
   target_plot <- sprintf(PLOT_PATTERN, column, name)
+  if (target_plot == "./plots/supplement/Supplement_S2_NSE_val_behavioural.png") {
+    figure_2 <- "./plots/Figure2_boxplots_NSE.png"
+  }
+  if (target_plot == "./plots/supplement/Supplement_S2_KGE_val_behavioural.png") {
+    figure_2 <- "./plots/Figure2_boxplots_KGE.png"
+  }
+
   behavioural_basins <- read_kge_and_define_good_basins(min_qual, max_qual)
   kge_info <- read_benchmarks_all(column = column)
 
@@ -97,4 +105,8 @@ for (column in c("r_val", "logNSE_val", "KGE_mod_val",
     coord_cartesian(ylim = ylim)
 
   ggsave(target_plot, units = "cm", width = 12, height = 10, dpi = 300)
+
+  if (!is.null(figure_2)) {
+    ggsave(figure_2, units = "cm", width = 12, height = 10, dpi = 300)
+  }
 }
