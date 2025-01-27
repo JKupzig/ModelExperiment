@@ -11,23 +11,20 @@ read_kge_and_define_good_basins <- function(min_kge = 0.4, max_kge = NULL) {
   }
 
   basins <- c(unique(all_kges$station))
-  basins_to_return <- c()
-
-  if (!is.null(min_kge)) {
-    basins_to_return <- unique(all_kges$station[all_kges$KGE_cal >= min_kge])
-  }
 
   if (!is.null(max_kge)) {
-    for (basin in basins) {
+    basins <- c()
+    for (basin in unique(all_kges$station)) {
       best_kge <- max(all_kges$KGE_cal[all_kges$station == basin])
       if (best_kge < max_kge) {
-        basins_to_return <- c(basins_to_return, basin)
+        basins <- c(basins, basin)
       }
     }
   }
 
-  if (length(basins_to_return) > 0) {
-    basins <- basins_to_return
+  if (!is.null(min_kge)) {
+    basins_to_use <- unique(all_kges$station[all_kges$KGE_cal >= min_kge])
+    basins <- basins[basins %in% basins_to_use]
   }
 
   return(list("behavioural" = basins, "data" = all_kges))
