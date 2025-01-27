@@ -40,7 +40,7 @@ read_benchmarks_all <- function(column = "kge_val") {
   models <- seq(8, 19, 1)
 
   cal_results <- read.table(sprintf(ROOT_100, models[1]), sep = "\t", header = TRUE)
-  cal_results <- data.frame(station=cal_results[,names(cal_results) %in% c("station")])
+  cal_results <- data.frame(station=cal_results[,GROUP_NAMES(cal_results) %in% c("station")])
 
   for (model in models){
     model_result <- read.table(sprintf(ROOT_100, model), sep = "\t", header = TRUE)
@@ -63,7 +63,7 @@ read_benchmarks_uncertainty <- function(column = "kge_val", uncertainty_type = 1
 
     cal_results_wanted <- cal_results[idx_dim_1, idx_dim_2, idx_dim_3, ]
     cal_results_wanted_df <- as.data.frame(t(cal_results_wanted))
-    names(cal_results_wanted_df) <- c(sprintf("model_m%i_100", model_type))
+    GROUP_NAMES(cal_results_wanted_df) <- c(sprintf("model_m%i_100", model_type))
 
      if (is.null(results)) {
       results <- cal_results_wanted_df

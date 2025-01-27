@@ -24,8 +24,8 @@ for (column in c("r_val", "logNSE_val", "KGE_mod_val",
     min_qual <- 0.4
     max_qual <- NULL
     name <- "behavioural"
-
   }
+  
   target_plot <- sprintf(PLOT_PATTERN, column, name)
   behavioural_basins <- read_kge_and_define_good_basins(min_qual, max_qual)
   kge_info <- read_benchmarks_all(column = column)
