@@ -160,6 +160,16 @@ kge_long[kge_long$Var2 == "pearson" &
   summarise(sum_is_better = sum(is_better),
             sum_is_worse = sum(is_worse))
 
+# comparison made by Verzano et al. (2009)
+kge_long[kge_long$Var2 == "monthly_nse" &
+         kge_long$Var1.y == "variable_flowvelocity", ] %>%
+  mutate(is_better = ifelse((Freq.x + 0.0) < Freq.y, 1, 0)) %>%
+  mutate(is_worse = ifelse((Freq.x - 0.0) > Freq.y, 1, 0)) %>%
+  summarise(sum_is_better_perc = sum(is_better) / length(unique(kge_long$Var3)) * 100.,
+            sum_is_worse_perc = sum(is_worse) / length(unique(kge_long$Var3)) * 100.,
+            sum_is_better = sum(is_better),
+            sum_is_worse = sum(is_worse))
+
 #evaluation: hanasaki_reservoirs
 kge_long[kge_long$Var2 == "sd" &
          kge_long$Var1.y == "hanasaki_reservoirs", ] %>%
@@ -178,8 +188,8 @@ kge_long[kge_long$Var2 == "pearson" &
 # Comparison made by Döll et al. (2009)
 kge_long[kge_long$Var2 == "monthly_nse" &
            kge_long$Var1.y == "hanasaki_reservoirs", ] %>%
-  mutate(is_better = ifelse((Freq.x + 0) < Freq.y, 1, 0)) %>%
-  mutate(is_worse = ifelse((Freq.x - 0) > Freq.y, 1, 0)) %>%
+  mutate(is_better = ifelse((Freq.x + 0.01) < Freq.y, 1, 0)) %>%
+  mutate(is_worse = ifelse((Freq.x - 0.01) > Freq.y, 1, 0)) %>%
   summarise(sum_is_better = sum(is_better),
             sum_is_worse = sum(is_worse))
 
