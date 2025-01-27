@@ -5,7 +5,6 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 
-
 source("./src/helper/color_ramps.r")
 
 plot_name_1 <- "./plots/Figure5_big_zoom.png"
