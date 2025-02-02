@@ -98,6 +98,7 @@ for (basin in BASINS){
   start <- min(date)
   end <- max(date)
 
+  doy_obs <- rep(NA, length(labels))
   if (file.exists(ROOT_GRDC)) {
     observed <- WaterGAPLite::Q.read_grdc(
       substr(basin, 2, 10),
@@ -106,13 +107,16 @@ for (basin in BASINS){
       start=start,
       end=end,
       use_folder=ROOT_GRDC)
-  }
+
 
   mean_discharge_obs <- observed %>%
     mutate(daily_code = format(Date, "%m")) %>%
     group_by(daily_code) %>%
     summarize(mean_basin = median(Value, na.rm=T)) %>%
     filter(daily_code != "02-29")
+
+    doy_obs <- mean_discharge_obs[interesting_months, ]$mean_basin
+  }
 
   mean_discharge_no_snow <- sim_data %>%
     mutate(daily_code = substr(date, 6, 7)) %>%
@@ -126,14 +130,12 @@ for (basin in BASINS){
 
   doy_no_snow <- mean_discharge_no_snow[interesting_months, ]$mean_basin
   doy_snow <- mean_discharge_snow[interesting_months, ]$mean_basin
-  doy_obs <- mean_discharge_obs[interesting_months, ]$mean_basin
 
-  min_y <- min(doy_snow, doy_obs, doy_no_snow) * 0.95
-  max_y <- max(doy_snow, doy_obs, doy_no_snow) * 1.05
+  min_y <- min(doy_snow, doy_obs, doy_no_snow, na.rm = TRUE) * 0.95
+  max_y <- max(doy_snow, doy_obs, doy_no_snow, na.rm = TRUE) * 1.05
 
   ylabel <- expression(paste("Long-term monthly discharge (m"^"3", "/s)", sep=""))
 
-  plot.new()
   png(sprintf(PLOT_PATTERN_2, basin),
       res = 300, units = "cm", width = 18, height = 12)
   plot(seq_along(labels), doy_obs,
@@ -152,4 +154,3 @@ for (basin in BASINS){
        labels = labels)
   dev.off()
 }
-
