@@ -94,11 +94,13 @@ The uploaded code is in the src-folder. Helper functions are placed in the src/h
 
  GRDC. (2020). The Global Runoff Data Centre, 56068 Koblenz, Germany.
 
- Kling, H.; Fuchs, M.; Paulin, M. (2012): Runoff conditions in the upper Danube basin under an ensemble of climate change scenarios. In Journal of Hydrology 424-425, pp. 264–277. DOI: 10.1016/j.jhydrol.2012.01.011.
+ Kling, H.; Fuchs, M.; Paulin, M. (2012). Runoff conditions in the upper Danube basin under an ensemble of climate change scenarios. In Journal of Hydrology 424-425, pp. 264–277. DOI: 10.1016/j.jhydrol.2012.01.011.
+
+ Kupzig, J.; Flörke, M. (2025): A controlled model experiment for the global hydrological model WaterGAP3: Understanding recent and new advances in the model structure. In: Environmental Modelling and Software, submitted.
 
  Nash, J. E., & Sutcliffe, J. V. (1970). River flow forecasting through conceptual models part I — A discussion of principles. Journal of Hydrology, 10(3), 282–290. https://doi.org/10.1016/0022-1694(70)90255-6
 
- Willmott, C.  J.; Ackleson, S. G.; Davis, R. E.; Feddema, J. J.; Klink, K. M.; Legates, D. R. et al. (1985): Statistics for the evaluation and comparison of models. In J. Geophys. Res. 90 (C5), pp. 8995–9005. DOI: 10.1029/JC090iC05p08995.
+ Willmott, C.  J.; Ackleson, S. G.; Davis, R. E.; Feddema, J. J.; Klink, K. M.; Legates, D. R. et al. (1985). Statistics for the evaluation and comparison of models. In J. Geophys. Res. 90 (C5), pp. 8995–9005. DOI: 10.1029/JC090iC05p08995.
 
 Zomer, R. J., & Trabucco, A. (2022). Version 3 of the Global Aridity Index and Potential Evapotranspiration Database. Scientific Data, 9(409). https://www.nature.com/articles/s41597-022-01493-1
 
