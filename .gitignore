@@ -1,7 +1,7 @@
 
 .Rproj.**
 .Rproj.user
-data/**
+
 ModelExperiment-1.Rproj
 .Rhistory
 src/_Ablage/
@@ -16,3 +16,5 @@ src/internal_scripts
 src/main_prepare_data_to_publish.R
 src/main_figure_a.r
 plots/**
+data/*.UNF0
+data/cal_result_appendix_variableflow*
