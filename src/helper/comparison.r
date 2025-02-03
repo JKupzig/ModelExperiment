@@ -41,7 +41,7 @@ compare_models <- function(cal_results,
                            reference_column,
                            to_compare_column,
                            label_to_use,
-                           min_quality = NULL){
+                           min_quality = NULL) {
 
   station_sufficient_quality <- cal_results$station
 

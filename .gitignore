@@ -5,3 +5,10 @@ data/**
 ModelExperiment-1.Rproj
 .Rhistory
 src/_Ablage/
+data - Kopie
+data/ne_110*
+data/nicht_hochladen
+data/_Ablage
+src/main_prepare_data_to_publish.R
+
+src/internal_scripts
