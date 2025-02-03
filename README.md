@@ -17,16 +17,17 @@
  - ggspatial (1.1.9) - CRAN
  - sf (1.0-14) - CRAN
 
-Please note that the libraries for spatial data sp and rgdal are outdated. There can be easily replaced by using the more modern variant `terra`. However, as this work is partially done by a HPC using an older R version we've decided to stick to the outdated libraries for compatibility reason.
+Please note that the libraries for spatial data sp and rgdal are outdated. They can be easily replaced by using the library `terra`. However, as this work is partially done by a HPC using an older R version we've decided to stick to the outdated libraries for compatibility reason.
 
-The library WaterGAPLite is only used to load the GRDC data, so the download and installation is not mandatory to run the code. The function can easily be replaced by an own function for loading GRDC data.
+The library WaterGAPLite is only used to load the GRDC data, so the download and installation is not mandatory to run the code. The function can be easily replaced by a self-written function for loading the GRDC files.
 
 ## Information of uploaded data
-This folder contains several files that are required to reproduce the findings published in Kupzig & Flörke (2025). Note that observed discharge, i.e., GRDC data, is not part of the repository as well as the background layer for displaying the landmass (shown in Figure 1). The code is written in a manner that it is still excecutable without showing the missing information. The missing informatioon are all open source and can be retrieved under the dollowing adresses:
+This folder contains several files that are required to reproduce the findings published in Kupzig & Flörke (2025). Note that observed discharge, i.e., GRDC data, is not part of the repository as well as the background layer for displaying the landmass (shown in Figure 1). The code is written in a manner that it is still excecutable without showing the missing information. The missing information are all open source and can be retrieved under the dollowing adresses:
 - GRDC data: https://grdc.bafg.de/
 - landmass-borders: https://www.naturalearthdata.com/downloads/110m-physical-vectors/110m-land/
 
 **_cal_result_benchmarks_model_m%i_wetlStorage100.txt:_**
+
  This type of files contains for each of the 12 model versions different <u>evaluation metrics</u> for the calibration and validation period. The Following metrics are included:
  - Kling-Gupta Efficiency and its components (KGE, a, b, r; Gupta el al., 2009)
  - modified KGE (Kling et al., 2012)
@@ -36,15 +37,19 @@ This folder contains several files that are required to reproduce the findings p
  Moreover, for each basin the calibrated $\gamma$ is given.
 
 **_cal_result_discharges_model_m%i_wetlStorage100.txt:_**
+
 This type of files contains for each of the 12 model versions the <u>simulated discharge</u> (m$^{3}$/s) of the calibrated model version for the complete period under study.
 
 **_cal_result_model_m%i_wetlStorage100.rds:_**
+
 This type of files contains for each of the 12 model versions the above-mentioned <u>evaluation metrics</u> for the calibration and validation period for all applied  $\gamma$-values namely, 0.1, 0.2, 0.3, 0.5, 0.7, 1.0, 2.0, 3.0, 4.0, 5.0. The file can be loaded via R and the command `readRDS`.
 
 **_cal_result_model_m%i_uncertainty.rds:_**
+
 This type of files contains for each of the 12 model versions the above-mentioned <u>evaluation metrics</u> for the calibration and validation period using multipliers to account for uncertainties in the precipitation data and model input. The naming follows the convention used in the Supplementary Material of Kupzig et al. (2025). The file can be loaded via R and the command `readRDS`.
 
 **_SI_original.rds:_**
+
 The file contains <u>signature indices</u> based on Addor et al. (2018) and listed in Table 3 of Kupzig et al. (2025). Some <u>additional information</u> is given, e.g., to discover unexpected behaviour or relate to other's results. The validation period is used to calculate the below listed metrics:
 - mgn_l: Low flow magnitude (mm/d)
 - mgn_h: High flow magnitude (mm/d)
@@ -60,6 +65,7 @@ The file contains <u>signature indices</u> based on Addor et al. (2018) and list
 The file can be loaded via R and the command `readRDS`.
 
 **_basin_attributes.txt:_**
+
 The file contains <u>characteristics of the basins</u>. The following characteristics are given:
 - grdc_ids: GRDC id of the basin (GRDC, 2020)
 - basin_size: Area of basin in model grid (km$^{2}$)
@@ -70,9 +76,11 @@ The file contains <u>characteristics of the basins</u>. The following characteri
 - sum_precipitation: Annual precipitation in the period 1979-1994 (mm)
 
 **_overview_map.shp:_**
+
 This is a shape-file which can be loaded by using an GIS, e.g. QGIS. It contains the <u>basin area</u> of all simulated basins, distinguishing between behavioural (defined with "1") and additional basins (defined with "2").
 
 **_reservoir_data.csv:_**
+
 Ths file contains information for all <u>373 simulated reservoirs</u> in the basin set. In detail, the following information is given:
 - grdc-id:  GRDC id of the basin where the reservoir is located(GRDC, 2020)
 - basin-set: Whether the basin is behavioural or additional
