@@ -15,3 +15,4 @@ src/internal_scripts
 
 src/main_prepare_data_to_publish.R
 src/main_figure_a.r
+plots/**
