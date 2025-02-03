@@ -28,8 +28,7 @@ comparison_models <- list(
   schneider_reservoirs = "16_wetlStorage100",
   snow_on_wetlands = "9_wetlStorage100"
 )
-models_in_kge <- c(base_model, names(comparison_models))
-run_to_use <- names(kge_info) %in% models_in_kge
+
 
 behavioural_basins <- read_kge_and_define_good_basins(min_kge=min_qual, max_kge=max_qual)
 

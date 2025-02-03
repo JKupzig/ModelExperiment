@@ -2,7 +2,6 @@ rm(list = ls())
 
 library(dplyr)
 library(ggplot2)
-library(watergap3data)
 
 source("./src/helper/read_data.r")
 source("./src/helper/comparison.r")
@@ -34,7 +33,6 @@ for (basin_group in c(1, 2, 3)){
   data <- merge(behavioural_basins, attributes, by.x = "station", by.y = "grdc_ids", how="left")
 
   data$mean_precipitation_as_snow <- data$mean_precipitation_as_snow * 100.
-  data$reservoir_area <- data$reservoir_area / data$basin_size * 1000
 
   data_long <- tidyr::pivot_longer(data, cols = all_of(CHARACTERISTIC_LIST))
   data_long$name <-  factor(data_long$name,
