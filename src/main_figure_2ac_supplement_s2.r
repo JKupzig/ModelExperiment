@@ -110,3 +110,20 @@ for (column in c("r_val", "logNSE_val", "KGE_mod_val",
     ggsave(figure_2, units = "cm", width = 12, height = 10, dpi = 300)
   }
 }
+
+# info text:
+column <- "KGE_val"
+kge_info <- read_benchmarks_all(column = column)
+velocity_data <- compare_models(kge_info, "model_m8_100", "model_m11_100", "variable flow velocity")
+merken <- velocity_data[velocity_data$basin_id %in% behavioural_basins$behavioural, ]
+sum(merken < -0.01) #87
+sum(merken >= -0.01 & merken <= 0.01) #12
+
+column <- "NSE_val"
+kge_info <- read_benchmarks_all(column = column)
+velocity_data <- compare_models(kge_info, "model_m8_100", "model_m11_100", "variable flow velocity")
+merken <- velocity_data[velocity_data$basin_id %in% behavioural_basins$behavioural, ]
+sum(merken < -0.01) #95
+sum(merken >= -0.01 & merken <= 0.01) #12
+
+
