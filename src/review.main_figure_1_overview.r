@@ -107,12 +107,16 @@ for (name in names(runs_to_analyse)){
   zero <- which(abs(x) == min(abs(x)))
   y_pos <- y[[1]][zero]+2
   arrows(0, y[[1]][zero], MIN_X, y[[1]][zero], angle=45, length=0.03)
-  text(x = MIN_X + 0.05, y = , # Coordinates
+  text(x = MIN_X + 0.05, y = y_pos, # Coordinates
        label = sprintf("%.1f %%", y[[1]][zero]), cex=CEX)
 
   y <- results[["behavioural"]]
-  y_min <- pmin(y[[1]], y[[2]], y[[3]], y[[4]])
-  y_max <- pmax(y[[1]], y[[2]], y[[3]], y[[4]])
+  if (length(y) == 4){
+    y[[5]] <- y[[1]]
+    y[[6]] <- y[[1]]
+  }
+  y_min <- pmin(y[[1]], y[[2]], y[[3]], y[[4]], y[[5]], y[[6]])
+  y_max <- pmax(y[[1]], y[[2]], y[[3]], y[[4]], y[[5]], y[[6]])
   polygon(c(x, rev(x)), c(y_min, rev(y_max)),
           col = adjustcolor("cornflowerblue", alpha.f=0.5), border=NA)
   lines(x, y[[1]], lwd=2, col=adjustcolor("cornflowerblue",alpha.f=0.5))
