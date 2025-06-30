@@ -1,4 +1,20 @@
 
+get_sensitive_basins <- function(name="snow"){
+
+  ATTRIBUTES <- "./data/basin_attributes.txt"
+  attributes <- read.table(ATTRIBUTES, sep = "\t", header = TRUE)
+  if (name == "snow"){
+    sensitive_basins <- attributes$grdc_ids[
+      (attributes$mean_precipitation_as_snow > 20) &
+        (attributes$localWetlands > 10)]
+  } else if (name == "reservoir") {
+    sensitive_basins <- attributes$grdc_ids[attributes$reservoir_area > 0]
+  } else {
+    sensitive_basins <- attributes$grdc_ids
+  }
+  return(sensitive_basins)
+}
+
 compare_models <- function(cal_results,
                            reference_column,
                            to_compare_column,
