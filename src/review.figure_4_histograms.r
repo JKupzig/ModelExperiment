@@ -120,15 +120,15 @@ for (column in columns){
   summarized_values$cor_upper <- summarized_values$upper
   summarized_values$cor_upper[37:72] <- summarized_values$mean[1:36] + summarized_values$upper[37:72]
 
-  summarized_values$cor_upper <- ifelse(summarized_values$mean == 0, 0, summarized_values$cor_upper)
-  summarized_values$cor_lower <- ifelse(summarized_values$mean == 0, 0, summarized_values$cor_lower)
-  summarized_values$cor_mean <- ifelse(summarized_values$mean == 0, 0, summarized_values$cor_mean)
+  summarized_values$cor_upper <- ifelse(summarized_values$mean == 0, -1, summarized_values$cor_upper)
+  summarized_values$cor_lower <- ifelse(summarized_values$mean == 0, -1, summarized_values$cor_lower)
+  summarized_values$cor_mean <- ifelse(summarized_values$mean == 0, -1, summarized_values$cor_mean)
 
   summarized_values %>%
     group_by(interval) %>%
     ggplot(aes(x = interval, y = mean, fill=set)) +
     geom_bar(stat = "identity") +
-    scale_y_continuous(breaks = scales::breaks_pretty()) +
+    scale_y_continuous(breaks = scales::breaks_pretty(), limits = c(0, NA)) +
     facet_wrap(. ~ model_part, scales="free_y", nrow=1) +
     geom_errorbar(aes(y = cor_mean, ymin = cor_lower, ymax = cor_upper), width = 0.4,
                   position = position_dodge(width = 0.5), size=0.3) +
