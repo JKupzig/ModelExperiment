@@ -1,3 +1,4 @@
+# Figure 5 and Appendix
 rm(list = ls())
 
 library(dplyr)
@@ -8,8 +9,8 @@ source("./src/helper/read_data.r")
 source("./src/helper/comparison.r")
 
 
-PLOT_PATTERN <- "./plots/review.histogram_%s.png"
-PLOT_PATTERN2 <- "./plots/review.histogram_notaffected_%s.png"
+PLOT_PATTERN <- "./plots/review/figure5_histogram_%s.png"
+PLOT_PATTERN2 <- "./plots/review/appendix_histogram_notaffected_%s.png"
 CEX = 7
 behavioural_set <- read_kge_and_define_good_basins(min_kge = 0.4, max_kge = NULL)
 ROOT_ATTRIBUTES <- "./data/basin_attributes.txt"
@@ -19,8 +20,6 @@ snow <- list(c(12,13), c(14, 15), c(16, 17), c(18, 19), c(8,9), c(11, 10))
 reservoir1 <- list(c(8,12), c(9, 13), c(11, 14), c(10, 15))
 reservoir <- list(c(12,16), c(13, 17), c(14, 18), c(15, 19))
 river <- list(c(12, 14), c(13, 15), c(16, 18), c(17, 19), c(8, 11), c(9, 10))
-
-# reservoir2 <- list(c(8,16), c(9, 17), c(11, 18), c(10, 19))
 
 
 columns <- c("KGE_val", "logNSE_val") # KGE & logNSE

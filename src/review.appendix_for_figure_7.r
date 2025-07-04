@@ -16,8 +16,8 @@ reservoir1 <- list(c(8,12), c(9, 13), c(11, 14), c(10, 15))
 reservoir <- list(c(12,16), c(13, 17), c(14, 18), c(15, 19))
 col_pattern <- "%i_wetlStorage100"
 
-to_analyse <- reservoir
-plot_name_res <- sprintf("./plots/review.figure6_%s.png", "reservoir2")
+to_analyse <- reservoir1 #reservoir reservoir1
+plot_name_res <- sprintf("./plots/review/appendix_SIs_%s.png", "reservoir1") #reservoir2 reservoir 1
 
 
 sensitive_basins <- get_sensitive_basins("reservoir")
@@ -90,7 +90,7 @@ data_to_plot %>%
     scale_fill_manual(name="", values=datylon_map[c(5,6)]) +
     theme_bw() +
     theme(
-      legend.position = c(0.1, 0.2), #0.1, 0.1 -> res1 | 0.1, 0.2 --> res2
+      legend.position = c(0.1, 0.1), #0.1, 0.1 -> res1 | 0.1, 0.2 --> res2
       legend.background = element_blank(),
       axis.text.x = element_blank(),
       axis.ticks.x = element_blank(),
@@ -102,7 +102,6 @@ data_to_plot %>%
       axis.title=element_text(size=CEX, color="black"),
       strip.text = element_text(size = CEX, color="black")) +
     facet_wrap(naming ~plot_type, scales = "free_y", labeller = label_parsed) +
-    #ggh4x::facet_grid2(plot_type ~ coloring, scales = "free_y", independent = "y") +
     scale_color_manual("type", values = hcl.colors(5, "viridis")) +
     xlab("") +
     ylab("")
@@ -144,8 +143,6 @@ for (col in c("h", "l")){
        xlab="observed", ylab="simulated")
   points(comp[[col_x]], comp[[col_y]], pch=19, col="navy")
   abline(a=0, b=1, col="firebrick")
-  #abline(reg_ref, col="black")
-  #abline(reg_comp, col="navy")
 
   print(sprintf("reference model (%s): %f", col, summary(reg_ref)$r.squared))
   print(sprintf("comparison model (%s): %f", col, summary(reg_comp)$r.squared))
@@ -185,8 +182,6 @@ for (col in c("h", "l")){
   plot(ref[[col_x]], ref[[col_y]], xlim=c(0,max_xy), ylim=c(0,max_xy), main=sprintf("res2: %s", col),
        xlab="observed", ylab="simulated")
   points(comp[[col_x]], comp[[col_y]], pch=19, col="navy")
-  #abline(reg_ref, col="black")
-  #abline(reg_comp, col="navy")
   abline(a=0, b=1, col="firebrick")
 
 
@@ -194,73 +189,3 @@ for (col in c("h", "l")){
   print(sprintf("comparison model (%s): %f", col, summary(reg_comp)$r.squared))
 
 }
-
-
-# #find weird reservoir algorithm (V1) basins
-# delta_long %>%
-#   filter(Var1 == "hanasaki_reservoirs") %>%
-#   filter(Var2 == "mgn_l") %>%
-#   filter(Freq < -0.1)
-#
-# delta_long %>%
-#   filter(Var1 == "hanasaki_reservoirs") %>%
-#   filter(Var2 == "frq_l") %>%
-#   filter(Freq > 80)
-#
-# delta_long %>%
-#   filter(Var1 == "hanasaki_reservoirs") %>%
-#   filter(Var2 == "dur_l") %>%
-#   filter(Freq > 10)
-#
-# delta_long %>%
-#   filter(Var1 == "hanasaki_reservoirs") %>%
-#   filter(Var2 == "mgn_h") %>%
-#   filter(Freq >= 0.7)
-#
-# delta_long %>%
-#   filter(Var1 == "hanasaki_reservoirs") %>%
-#   filter(Var2 == "frq_h") %>%
-#   filter(Freq >= 1.5)
-#
-# delta_long %>%
-#   filter(Var1 == "hanasaki_reservoirs") %>%
-#   filter(Var2 == "dur_h") %>%
-#   filter(Freq >= 1.5)
-#
-# #find weird reservoir algorithm (V2) basins
-# delta_long %>%
-#   filter(Var1 == "schneider_reservoirs") %>%
-#   filter(Var2 == "mgn_l") %>%
-#   filter(Freq < -0.1)
-#
-# delta_long %>%
-#   filter(Var1 == "schneider_reservoirs") %>%
-#   filter(Var2 == "frq_l") %>%
-#   filter(Freq > 80)
-#
-# delta_long %>%
-#   filter(Var1 == "schneider_reservoirs") %>%
-#   filter(Var2 == "dur_l") %>%
-#   filter(Freq > 10)
-#
-# delta_long %>%
-#   filter(Var1 == "schneider_reservoirs") %>%
-#   filter(Var2 == "mgn_h") %>%
-#   filter(Freq >= 0.7)
-#
-# delta_long %>%
-#   filter(Var1 == "schneider_reservoirs") %>%
-#   filter(Var2 == "frq_h") %>%
-#   filter(Freq >= 1.5)
-#
-# delta_long %>%
-#   filter(Var1 == "schneider_reservoirs") %>%
-#   filter(Var2 == "dur_h") %>%
-#   filter(Freq >= 1.5)
-#
-# #find explanation
-# delta_long %>%
-#   filter(Var1 == "schneider_reservoirs") %>%
-#   filter(Var2 == "lowflow_events") %>%
-#   filter(Freq > 1)
-#

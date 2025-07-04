@@ -6,7 +6,7 @@ source("./src/helper/read_data.r")
 
 # TODO update uncertainty data, for some basins not the calibrated gamma value where used in model runs!
 ROOT <- "./data/cal_result_model_m%i_uncertainty.rds"
-TARGET <- "./plots/supplement/supplement_s3_%s.png"
+TARGET <- "./plots/review/supplement_s3_%s.png"
 
 REFERENCE_MODEL <- c(8, 8, 8, 8)
 COMPARISON_MODEL <- c(16, 12, 11, 9)

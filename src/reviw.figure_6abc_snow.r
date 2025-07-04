@@ -14,8 +14,8 @@ source("./src/helper/comparison.r")
 source("./src/helper/read_data.r")
 source("./src/helper/color_ramps.r")
 
-PLOT_NAME_1 <- "./plots/review.Figure_6a.png"
-PLOT_PATTERN_2 <- "./plots/review.Figure_6bc_%s.png"
+PLOT_NAME_1 <- "./plots/review/figure6a_snow.png"
+PLOT_PATTERN_2 <- "./plots/review/figure6bc_%s.png"
 
 METRIC <- "r_val"
 BASINS <- c("X4119101", "X4232700")

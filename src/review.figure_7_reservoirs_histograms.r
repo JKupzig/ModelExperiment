@@ -8,7 +8,7 @@ source("./src/helper/read_data.r")
 source("./src/helper/comparison.r")
 
 
-plot_name <- "./plots/review.histogram_figure6_reservoirs.png"
+plot_name <- "./plots/review/figure7_reservoirs.png"
 CEX = 7
 behavioural_set <- read_kge_and_define_good_basins()
 sensitive_basins <- get_sensitive_basins("reservoir")
@@ -50,7 +50,7 @@ for (column in columns){
     if (set_name == "behavioural"){
        data <- data[,,dimnames(data)[[3]] %in% behavioural_set$behavioural]
     } else {
-       data <- data[,,dimnames(data)[[3]] %in% behavioural_set$behavioural]
+       data <- data[,,!dimnames(data)[[3]] %in% behavioural_set$behavioural]
     }
 
     start_row <- 1
@@ -118,8 +118,8 @@ summarized_values$set <- factor(
 summarized_values$si <- factor(
   summarized_values$si,
   levels = columns,
-  labels=c("Delta~timing~(Delta~Pearson~r)", "Delta~flow~volume~(Delta~alpha)", "Delta~variability~(Delta~beta)",
-           "Delta~magnitude[low]", "Delta~magnitude[high]"))
+  labels=c("Delta~timing~(Delta~Pearson~r)~'[-]'", "Delta~flow~volume~(Delta~alpha)~'[-]'", "Delta~variability~(Delta~beta)~'[-]'",
+           "Delta~magnitude[low]~'[mm/d]'", "Delta~magnitude[high]~'[mm/d]'"))
 
 behav <- which(summarized_values$set == "behav.")
 non_behav <- which(summarized_values$set == "non-behav.")
@@ -140,7 +140,7 @@ summarized_values %>%
   ggplot(aes(x = interval, y = mean, fill=set)) +
   geom_bar(stat = "identity") +
   scale_y_continuous(breaks = scales::breaks_pretty(), limits = c(0, NA)) +
-  facet_wrap(model_part ~ si, scales="free", nrow=2, labeller = label_parsed) +
+  facet_wrap(model_part ~ si, scales="free_x", nrow=2, labeller = label_parsed) +
   geom_errorbar(aes(y = cor_mean, ymin = cor_lower, ymax = cor_upper), width = 0.4,
                 position = position_dodge(width = 0.5), size=0.3) +
   geom_point(aes(y = cor_mean), position = position_dodge(width = 0.5), size=0.4) +

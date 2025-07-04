@@ -1,3 +1,4 @@
+# Figure 4a and 4b
 rm(list=ls())
 
 library(dplyr)
@@ -13,6 +14,9 @@ MIN_QUAL <- 0.4
 SPATIAL_INFO <- "./data - Kopie/G_CALIB_BASIN.UNF2" # watergap-specific data!
 STATION_INFO <- "./data - Kopie/STATION_LIST.OUT"
 BASEMAP <- "C:/Users/jenny/MyProject_sciebo_backup/SensitivityAnalysis/ne_110m_land"
+
+plot_name1 <- "./plots/review/figure4_calibration_result_map.png"
+plot_name2 <- "./plots/review/figure4_calibration_result_map_histogram.png"
 
 column <- "KGE_cal"
 kge_info <- read_benchmarks_all(column)
@@ -87,7 +91,7 @@ world_plot <- ggplot() +
         legend.text = element_text(size=CEX, color="black"),
         legend.title = element_text(size=CEX, color="black"))
 
-ggsave("./plots/review.calibration_result_map.png", plot=world_plot,
+ggsave(plot_name1, plot=world_plot,
        units="cm", width=20, height=10, dpi=300)
 
 
@@ -120,7 +124,7 @@ hist_plot <- ggplot(hist_values, aes(x = interval_names, y = Freq)) +
     axis.line = element_line(colour = "black"),
   )
 
-ggsave("./plots/review.calibration_result_map_histogram.png", plot=hist_plot,
+ggsave(plot_name2, plot=hist_plot,
        units="cm", width=5, height=5, dpi=300)
 
 # examine cal result

@@ -1,3 +1,5 @@
+# Figure 3a and 3b
+
 rm(list = ls())
 
 library(dplyr)
@@ -7,6 +9,9 @@ source("./src/helper/read_data.r")
 source("./src/helper/comparison.r")
 source("./src/helper/color_ramps.r")
 
+
+plot_name1 <- "./plots/review/figure3b_histogram_affected_sets.png"
+plot_name2 <- "./plots/review/figure3a_affected_sets_map.png"
 
 ATTRIBUTES <- "./data/basin_attributes.txt"
 CHARACTERISTIC_LIST <- c("sum_precipitation", "mean_temperature", "mean_precipitation_as_snow","aridity", "localWetlands", "basin_size")
@@ -57,7 +62,7 @@ ggplot(data_all) +
         legend.text = element_text(size=CEX, color="black"),
         legend.title = element_text(size=CEX, color="black"))
 
-ggsave("./plots/review.Figure1_histogram_affected_sets.png",
+ggsave(plot_name1,
        dpi = 600, units = "cm", width = 16, height = 12)
 
 length(get_sensitive_basins("snow")) # 47
@@ -159,6 +164,6 @@ world_plot <- ggplot() +
         legend.text = element_text(size=CEX, color="black"),
         legend.title = element_text(size=CEX, color="black"))
 
-ggsave("./plots/review.affected_sets_map.png", plot=world_plot,
+ggsave(plot_name2, plot=world_plot,
        units="cm", width=20, height=10, dpi=300)
 
