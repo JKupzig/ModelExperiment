@@ -21,6 +21,7 @@ plot_name2 <- "./plots/review/figure4_calibration_result_map_histogram.png"
 column <- "KGE_cal"
 kge_info <- read_benchmarks_all(column)
 
+model_to_analyse <- "model_m18_100"
 
 spatial_data_basins <- watergap3data::unf.readunf(SPATIAL_INFO, CONT)
 station_data <- watergap3data::txt.read_station_list(STATION_INFO)
@@ -58,7 +59,7 @@ wmap_robin <- sp::spTransform(wmap, sp::CRS("+proj=robin"))
 intervals <- c(-100, 0, 0.2, 0.4, 0.6, 0.8)
 interval_labels <- c("-0.361 to 0", "0.0 to 0.2", "0.2 to 0.4",
                      "0.4 to 0.6", "0.6 to 0.75")
-polygons_behavioural$cal_classes <- cut(cal_result$model_m19_100,
+polygons_behavioural$cal_classes <- cut(cal_result[[model_to_analyse]],
                    breaks = intervals,
                    labels = interval_labels)
 
@@ -95,7 +96,7 @@ ggsave(plot_name1, plot=world_plot,
        units="cm", width=20, height=10, dpi=300)
 
 
-interval_names <- cut(kge_info$model_m19_100, intervals, include.lowest = TRUE)
+interval_names <- cut(kge_info[[model_to_analyse]], intervals, include.lowest = TRUE)
 hist_values <- as.data.frame(table(interval_names))
 hist_values$interval_names <- factor(
   hist_values$interval_names,
@@ -128,5 +129,5 @@ ggsave(plot_name2, plot=hist_plot,
        units="cm", width=5, height=5, dpi=300)
 
 # examine cal result
-sort(kge_info$model_m19_100)
+sort(kge_info[[model_to_analyse]])
 

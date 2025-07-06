@@ -9,10 +9,11 @@ source("./src/helper/color_ramps.r")
 
 
 ATTRIBUTES <- "./data/basin_attributes.txt"
-CHARACTERISTIC_LIST <- c("sum_precipitation", "mean_temperature", "mean_precipitation_as_snow")
+CHARACTERISTIC_LIST <- c("sum_precipitation", "mean_temperature", "mean_precipitation_as_snow", "aridity")
 LABELS_TO_USE <- c("Annual precipitation [mm]",
                    "Mean temperature [°C]",
-                   "Precipitation as snow [%]")
+                   "Precipitation as snow [%]",
+                   "Aridity Index [-]")
 
 
 data_to_plot <- list()
@@ -43,7 +44,7 @@ data_all <- do.call(rbind, data_to_plot)
 CEX=12
 ggplot(data_all) +
   stat_ecdf(geom = "step", aes(x=value, color=set), linewidth=1) +
-  facet_wrap(.~name, scales = "free", ncol=1) +
+  facet_wrap(.~name, scales = "free", ncol=2) +
   theme_bw() +
   xlab("") +
   ylab("Cum. freq [-]") +
@@ -60,8 +61,8 @@ ggplot(data_all) +
         legend.text = element_text(size=CEX, color="black"),
         legend.title = element_text(size=CEX, color="black"))
 
-ggsave("./plots/review.behavioural_characteristics.png",
-       dpi = 600, units = "cm", width = 10, height = 16) #height=14
+ggsave("./plots/review/figure4b_behavioural_characteristics.png",
+       dpi = 600, units = "cm", width = 14, height = 14) #height=14
 
 
 

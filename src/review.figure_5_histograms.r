@@ -22,7 +22,7 @@ reservoir <- list(c(12,16), c(13, 17), c(14, 18), c(15, 19))
 river <- list(c(12, 14), c(13, 15), c(16, 18), c(17, 19), c(8, 11), c(9, 10))
 
 
-columns <- c("KGE_val", "logNSE_val") # KGE & logNSE
+columns <- c("KGE_val", "logNSE_val", "NSE_val", "d1_val", "KGE_mod_val", "r_val") # KGE & logNSE
 
 names <- c(rep("variable flow velocity", length(river)),
            rep("reservoir algorithm (V1)", length(reservoir1)),
