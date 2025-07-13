@@ -1,5 +1,3 @@
-# Figure 6 a) + b) + c)
-
 rm(list = ls())
 
 library(ggplot2)

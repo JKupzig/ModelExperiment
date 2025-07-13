@@ -10,11 +10,10 @@ data/ne_110*
 data/nicht_hochladen
 data/_Ablage
 data1
+Rplots.pdf
 
 src/internal_scripts
-
-src/main_prepare_data_to_publish.R
-src/main_figure_a.r
+src\review.prepare_data_to_publish.R
 plots/**
 data/*.UNF0
 data/cal_result_appendix_variableflow*
