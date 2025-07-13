@@ -7,7 +7,7 @@ source("./src/helper/read_data.r")
 source("./src/helper/comparison.r")
 source("./src/helper/color_ramps.r")
 
-plot_name <- "./plots/review/appendixA1b_behavioural_characteristics.png"
+plot_name <- "./plots/appendixA1b_behavioural_characteristics.png"
 
 ATTRIBUTES <- "./data/basin_attributes.txt"
 CHARACTERISTIC_LIST <- c("sum_precipitation", "mean_temperature", "mean_precipitation_as_snow", "aridity", "localWetlands", "globalLakes")

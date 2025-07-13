@@ -9,8 +9,8 @@ source("./src/helper/color_ramps.r")
 
 BASEMAP <- "C:/Users/jenny/MyProject_sciebo_backup/SensitivityAnalysis/ne_110m_land"
 
-plot_name1 <- "./plots/review/figure2b_histogram_affected_sets.png"
-plot_name2 <- "./plots/review/figure2a_affected_sets_map.png"
+plot_name1 <- "./plots/figure2b_histogram_affected_sets.png"
+plot_name2 <- "./plots/figure2a_affected_sets_map.png"
 
 ATTRIBUTES <- "./data/basin_attributes.txt"
 CHARACTERISTIC_LIST <- c("sum_precipitation", "mean_temperature", "mean_precipitation_as_snow", "aridity", "localWetlands", "basin_size")

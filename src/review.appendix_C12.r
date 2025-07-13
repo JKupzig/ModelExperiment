@@ -19,12 +19,12 @@ for (name in set_names) {
   if (name == "reservoir algorithm (V1)") {
     legend_position <- c(0.1, 0.1)
     to_analyse <- list(c(8, 12), c(9, 13), c(11, 14), c(10, 15))
-    plot_name_res <- sprintf("./plots/review/appendixC1_SIs_%s.png", "reservoir")
+    plot_name_res <- sprintf("./plots/appendixC1_SIs_%s.png", "reservoir")
     sensitive_basins <- get_sensitive_basins("reservoir")
   } else {
     legend_position <- c(0.1, 0.2)
     to_analyse <- list(c(12, 16), c(13, 17), c(14, 18), c(15, 19))
-    plot_name_res <- sprintf("./plots/review/appendixC2_SIs_%s.png", "reservoir2")
+    plot_name_res <- sprintf("./plots/appendixC2_SIs_%s.png", "reservoir2")
     sensitive_basins <- get_sensitive_basins("non-irrig")
   }
 

@@ -8,7 +8,7 @@ source("./src/helper/read_data.r")
 source("./src/helper/comparison.r")
 
 
-plot_name <- "./plots/review/figure5_reservoirs.png"
+plot_name <- "./plots/figure5_reservoirs.png"
 CEX <- 7
 behavioural_set <- read_kge_and_define_good_basins()
 sensitive_basins <- get_sensitive_basins("reservoir")

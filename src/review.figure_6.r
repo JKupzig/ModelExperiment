@@ -6,8 +6,8 @@ library(ggplot2)
 
 source("./src/helper/color_ramps.r")
 
-plot_name_1 <- "./plots/review/figure6_big_zoom.png"
-plot_name_2 <- "./plots/review/figure6_small_zoom.png"
+plot_name_1 <- "./plots/figure6_big_zoom.png"
+plot_name_2 <- "./plots/figure6_small_zoom.png"
 
 BASIN <- "X4126701"
 ROOT_REEFERENCE <- "./data/cal_result_discharges_model_m12_wetlStorage100.txt"

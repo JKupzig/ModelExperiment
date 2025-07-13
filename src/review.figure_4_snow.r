@@ -12,8 +12,8 @@ source("./src/helper/comparison.r")
 source("./src/helper/read_data.r")
 source("./src/helper/color_ramps.r")
 
-PLOT_NAME_1 <- "./plots/review/figure4a_snow.png"
-PLOT_PATTERN_2 <- "./plots/review/figure4bc_%s.png"
+PLOT_NAME_1 <- "./plots/figure4a_snow.png"
+PLOT_PATTERN_2 <- "./plots/figure4bc_%s.png"
 
 METRIC <- "r_val"
 snow <- list(c(12,13), c(14, 15), c(16, 17), c(18, 19), c(8,9), c(11, 10))

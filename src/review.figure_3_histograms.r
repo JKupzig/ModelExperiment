@@ -8,8 +8,8 @@ source("./src/helper/read_data.r")
 source("./src/helper/comparison.r")
 
 
-PLOT_PATTERN <- "./plots/review/figure3_histogram_%s.png"
-PLOT_PATTERN2 <- "./plots/review/additional_info_histogram_notaffected_%s.png"
+PLOT_PATTERN <- "./plots/figure3_histogram_%s.png"
+PLOT_PATTERN2 <- "./plots/additional_info_histogram_notaffected_%s.png"
 CEX <- 7
 behavioural_set <- read_kge_and_define_good_basins(min_kge = 0.4, max_kge = NULL)
 ROOT_ATTRIBUTES <- "./data/basin_attributes.txt"

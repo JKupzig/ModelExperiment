@@ -8,7 +8,7 @@ source("./src/helper/read_data.r")
 source("./src/helper/color_ramps.r")
 
 data <- readRDS("./data/SI_original.rds")
-PLOT_PATTERN <- "./plots/review/figure7_%s.png"
+PLOT_PATTERN <- "./plots/figure7_%s.png"
 MIN <- 0.5
 MAX <- 1.5
 

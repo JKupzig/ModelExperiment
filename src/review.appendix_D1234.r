@@ -5,7 +5,7 @@ source("./src/helper/comparison.r")
 source("./src/helper/color_ramps.r")
 
 ROOT <- "./data/cal_result_model_m%i_uncertainty.rds"
-TARGET <- "./plots/review/appendixD_%s.png"
+TARGET <- "./plots/appendixD_%s.png"
 
 REFERENCE_MODEL <- c(12, 8, 8, 8)
 COMPARISON_MODEL <- c(16, 12, 11, 9)

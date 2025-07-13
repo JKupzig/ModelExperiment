@@ -29,7 +29,7 @@ complete_period <- as.POSIXct(discharge_hanasaki$date)
 
 count <- 1
 for (basin in all_examine){
-  plot_name <- sprintf("plots/review/appendixC34_%s.png", basin)
+  plot_name <- sprintf("plots/appendixC34_%s.png", basin)
 
   discharge_observed <- tryCatch(
       WaterGAPLite::Q.read_grdc(

@@ -20,8 +20,8 @@ if (file.exists(BASEMAP)){
   cal_result <- sp::spTransform(cal_result, sp::CRS("+proj=robin"))
 }
 
-plot_name1 <- "./plots/review/appendixA1a_world_plot.png"
-plot_name2 <- "./plots/review/appendixA1a_histrogram.png"
+plot_name1 <- "./plots/appendixA1a_world_plot.png"
+plot_name2 <- "./plots/appendixA1a_histrogram.png"
 
 kge_info <- read_benchmarks_all("KGE_cal")
 
