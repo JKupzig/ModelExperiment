@@ -8,7 +8,7 @@ source("./src/helper/read_data.r")
 source("./src/helper/color_ramps.r")
 
 data <- readRDS("./data/SI_original.rds")
-PLOT_PATTERN <- "./plots/review/figure8_%s.png"
+PLOT_PATTERN <- "./plots/review/figure7_%s.png"
 MIN <- 0.5
 MAX <- 1.5
 
@@ -126,3 +126,18 @@ sensitive_basins %>%
 
 ggsave(plot_name, units = "cm", width = 16, height = 8, dpi = 300)
 
+sensitive_basins %>%
+  filter(Var2 %in% benchmark.labs[1]) %>%
+  filter(Var1 == "variable flow velocity") %>%
+  group_by(set) %>%
+  summarise(median=median(Freq), mean=mean(Freq),
+            max=max(Freq), min=min(Freq),
+            q25=quantile(Freq, 0.25), q75=quantile(Freq, 0.75))
+
+sensitive_basins %>%
+  filter(Var2 %in% benchmark.labs[1]) %>%
+  filter(Var1 == "variable flow velocity") %>%
+  mutate(pos = Freq > 0.01) %>%
+  mutate(neg = Freq < -0.01) %>%
+  group_by(set) %>%
+  summarise(count_pos=round(sum(pos) / n() * 100,0), count_neg=round(sum(neg) / n() * 100, 0), n = n())

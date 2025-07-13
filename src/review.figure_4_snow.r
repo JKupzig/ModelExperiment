@@ -14,56 +14,85 @@ source("./src/helper/comparison.r")
 source("./src/helper/read_data.r")
 source("./src/helper/color_ramps.r")
 
-PLOT_NAME_1 <- "./plots/Figure_6a.png"
-PLOT_PATTERN_2 <- "./plots/Figure_6bc_%s.png"
+PLOT_NAME_1 <- "./plots/review/figure4a_snow.png"
+PLOT_PATTERN_2 <- "./plots/review/figure4bc_%s.png"
 
 METRIC <- "r_val"
+snow <- list(c(12,13), c(14, 15), c(16, 17), c(18, 19), c(8,9), c(11, 10))
 BASINS <- c("X4119101", "X4232700")
 
 ROOT_ATTRIBUTES <- "./data/basin_attributes.txt"
 ROOT_BENCHMARK <- "./data/cal_result_benchmarks_model_m%i_wetlStorage100.txt"
 ROOT_SIMULATED <- "./data/cal_result_discharges_model_m%i_wetlStorage100.txt"
 # retrieved from https://grdc.bafg.de/data/data_portal/
-ROOT_GRDC <- r"(C:\Users\jenny\MyProject_sciebo\GRDC_2020\Rohdaten)"
+ROOT_GRDC <- r"(C:\Users\jenny\MyProject_sciebo_backup\GRDC_2020\Rohdaten)"
 
 attributes <- read.table(ROOT_ATTRIBUTES, sep = "\t", header = TRUE)
-
 reference_discharge_all <- read.table(sprintf(ROOT_SIMULATED, 8), sep = "\t", header = TRUE)
 comparison_discharge_all <- read.table(sprintf(ROOT_SIMULATED, 9), sep = "\t", header = TRUE)
 
-cal_results_reference <- read.table(sprintf(ROOT_BENCHMARK, 8), sep = "\t", header = TRUE)
-cal_results_comparison <- read.table(sprintf(ROOT_BENCHMARK, 9), sep = "\t", header = TRUE)
-cal_results <- data.frame(
-  basin_id=cal_results_reference$station,
-  reference=cal_results_reference[[METRIC]],
-  comparison=cal_results_comparison[[METRIC]],
-  delta = cal_results_comparison[[METRIC]] - cal_results_reference[[METRIC]]
-)
 
-data <- merge(cal_results, attributes, by.x="basin_id", by.y="grdc_ids", how="left")
+deltas <- c()
+for (entry in seq_along(snow)){
+  cal_results_reference <- read.table(sprintf(ROOT_BENCHMARK, snow[[entry]][1]), sep = "\t", header = TRUE)
+  cal_results_comparison <- read.table(sprintf(ROOT_BENCHMARK, snow[[entry]][2]), sep = "\t", header = TRUE)
+  data <- data.frame(
+    basin_id=cal_results_reference$station,
+    reference=cal_results_reference[[METRIC]],
+    comparison=cal_results_comparison[[METRIC]],
+    delta = cal_results_comparison[[METRIC]] - cal_results_reference[[METRIC]]
+  )
+  deltas <- c(deltas, data$delta)
+}
 
-sensitive_basins <- data[
-  (data$mean_precipitation_as_snow > 0.2) &
-   (data$localWetlands > 10),]
+delta_matrix <- matrix(unlist(deltas), nrow = nrow(data), byrow = FALSE)
+data$mean <- apply(delta_matrix, 1, median)
+data$lower <- apply(delta_matrix, 1, min)
+data$upper <- apply(delta_matrix, 1, max)
 
+data <- merge(data, attributes, by.x="basin_id", by.y="grdc_ids", how="left")
+
+sensitive_basins_ids <- get_sensitive_basins("snow")
+data <- data[data$basin_id %in% sensitive_basins_ids,]
+
+behavioural_basins <- read_kge_and_define_good_basins()
+data$set <- ifelse(data$basin_id %in% behavioural_basins$behavioural, "behavioural", "non-behavioural")
+data$set <- factor(
+   data$set,
+   levels=c("non-behavioural", "behavioural"),
+   labels=c("non-behavioural", "behavioural"))
 # Figure 6a
-sensitive_basins %>%
-  ggplot(., aes(x=localWetlands, y=delta)) +
-  xlab("Fraction of smaller wetlands (%)") +
-  ylab(("\u0394 Timing (-)")) +
+CEX = 12
+data %>%
+  ggplot(., aes(x=localWetlands, y=mean, col=set)) +
+  xlab("Fraction of local wetlands [%]") +
+  ylab(("\u0394 timing [-]\n(\u0394 Pearson r)")) +
+  geom_hline(yintercept=0, color="darkgrey") +
   geom_point() +
-  geom_hline(yintercept=0.01, col="darkgrey", lwd=.6) +
-  geom_hline(yintercept=-0.01, col="darkgrey", lwd=.6) +
-  geom_hline(yintercept=0.1, col="darkgrey", lwd=.6) +
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.5,
+                position=position_dodge(0.00), size=0.5) +
+  scale_color_manual(name="", values=datylon_map[c(6,4)]) +
   xlim(10,75) +
-  theme_classic()
+  theme_bw() +
+  theme(legend.position = c(0.15, 0.9),
+        legend.background = element_blank(),
+        legend.text = element_text(color="black", size=CEX),
+        axis.text =element_text(color="black",size=CEX),
+        axis.title = element_text(color="black",size=CEX))
 ggsave(PLOT_NAME_1, units="cm", width=16, height=12, dpi=300)
+
+## numbers
+boxplot(
+  list("worse"=data[data$mean < -0.01, 12],
+       "better"=data[data$mean > 0.01, 12])
+  )
+
 
 # create table infor for Figure 6a
 THRESHOLDS <- c(0.05, 0.01, -0.01, -0.05)
 LABELS <- c("significantly better", "moderately better",
             "no change", "moderately worse", "significantly worse")
-labeled_data <- sensitive_basins %>%
+labeled_data <- data %>%
   mutate(group=
            ifelse(delta >= THRESHOLDS[1], LABELS[1],
                   ifelse(delta < THRESHOLDS[1] & delta > THRESHOLDS[2], LABELS[2],
@@ -134,10 +163,11 @@ for (basin in BASINS){
   min_y <- min(doy_snow, doy_obs, doy_no_snow, na.rm = TRUE) * 0.95
   max_y <- max(doy_snow, doy_obs, doy_no_snow, na.rm = TRUE) * 1.05
 
-  ylabel <- expression(paste("Long-term monthly discharge (m"^"3", "/s)", sep=""))
+  ylabel <- expression(paste("Long-term monthly discharge [m"^"3", "s"^"-1","]", sep=""))
 
   png(sprintf(PLOT_PATTERN_2, basin),
-      res = 300, units = "cm", width = 18, height = 12)
+      res = 300, units = "cm", width = 18, height = 8)
+  par(mai=c(0.5,1,0.1,0.1))
   plot(seq_along(labels), doy_obs,
        xlab = "", ylab = ylabel, xaxt = "n",
        ylim = c(min_y, max_y), lwd=1.4, pch = 19, type = "b")
@@ -145,11 +175,13 @@ for (basin in BASINS){
         col = datylon_map[2], lwd=1.4, pch = 19, type = "b")
   lines(seq_along(labels), doy_snow,
         col = datylon_map[5], lwd=1.4, pch = 19, type = "b")
-  legend(legend_position_basins,
-    legend = c("Observed discharge", "Inactive snow on wetlands",
-            "Active snow on wetlands"),
-    cex=1.0, bg = NA, bty = "n",
-    lty = 1, lwd = 2, col = c("black", datylon_map[2], datylon_map[5]))
+  if (count == 2){
+    legend(legend_position_basins,
+           legend = c("Observed discharge", "Inactive snow on wetlands",
+                      "Active snow on wetlands"),
+           cex=1.0, bg = NA, bty = "n",
+           lty = 1, lwd = 2, col = c("black", datylon_map[2], datylon_map[5]))
+  }
   axis(1, at = seq_along(labels),
        labels = labels)
   dev.off()

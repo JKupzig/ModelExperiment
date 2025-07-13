@@ -2,6 +2,24 @@
  This repository supports reproducing the findings in Kupzig & Flörke (2025). It mainly consists of the compiled data and
  source-code for evaluating the data. An empty plot-folder is present so that the code can be directly excecuted of the current working directory is specified as the root of the downloaded GitHub-repository.
 
+
+ ## Definition of model setups
+ In the R code, the different model runs as specified using the pattern "m%i_wetland100". This names relates in the following to the
+ comparison pairs shown in Table 3 of Kupzig & Flörke (2025):
+
+ - m8  &#8594; S0, V0, R0
+ - m9  &#8594; S1, V0, R0
+ - m10 &#8594; S1, V0, R1
+ - m11 &#8594; S0, V0, R1
+ - m12 &#8594; S0, V1, R0
+ - m13 &#8594; S1, V1, R0
+ - m14 &#8594; S0, V1, R1
+ - m15 &#8594; S1, V1, R1
+ - m16 &#8594; S0, V2, R0
+ - m17 &#8594; S1, V2, R0
+ - m18 &#8594; S0, V2, R1
+ - m19 &#8594; S1, V2, R1
+
  ## Requirements
  We've used R 4.3.1 for creating and excecuting the code. The following packages are required to excecute the code:
  - ggplot2 (3.5.1) - CRAN
@@ -28,13 +46,11 @@ This folder contains several files that are required to reproduce the findings p
 
 **_cal_result_benchmarks_model_m%i_wetlStorage100.txt:_**
 
- This type of files contains for each of the 12 model versions different <u>evaluation metrics</u> for the calibration and validation period. The Following metrics are included:
+ This type of files contains for each of the 12 model versions different <u>evaluation metrics</u> for the calibration and validation period.  Moreover, for each basin the calibrated $\gamma$ is given. The Following metrics are included:
  - Kling-Gupta Efficiency and its components (KGE, a, b, r; Gupta el al., 2009)
  - modified KGE (Kling et al., 2012)
  - Nash-Sutcliff Efficiency (NSE; Nash & Sutcliff, 1970)
- - logarithmic versio of the NSE (logNSE)
- - d1-metric (Willmott, et al., 1985)
- Moreover, for each basin the calibrated $\gamma$ is given.
+ - logarithmic version of the NSE (logNSE)
 
 **_cal_result_discharges_model_m%i_wetlStorage100.txt:_**
 
@@ -46,21 +62,39 @@ This type of files contains for each of the 12 model versions the above-mentione
 
 **_cal_result_model_m%i_uncertainty.rds:_**
 
-This type of files contains for each of the 12 model versions the above-mentioned <u>evaluation metrics</u> for the calibration and validation period using multipliers to account for uncertainties in the precipitation data and model input. The naming follows the convention used in the Supplementary Material of Kupzig et al. (2025). The file can be loaded via R and the command `readRDS`.
+This type of files contains for each of the 12 model versions the above-mentioned <u>evaluation metrics</u> for the calibration and validation period using multipliers to account for uncertainties in the precipitation data and model input. The file can be loaded via R and the command `readRDS`.
 
 **_SI_original.rds:_**
 
-The file contains <u>signature indices</u> based on Addor et al. (2018) and listed in Table 3 of Kupzig et al. (2025). Some <u>additional information</u> is given, e.g., to discover unexpected behaviour or relate to other's results. The validation period is used to calculate the below listed metrics:
-- mgn_l: Low flow magnitude (mm/d)
-- mgn_h: High flow magnitude (mm/d)
-- frq_l: Low flow frequency (d)
-- frq_h: High flow frequency (d)
-- dur_l: Low flow duration (d)
-- dur_h: High flow duration (d)
-- lowflow_events: Number of low flow events (-)
-- highflow_events: Number of high flow events (-)
-- monthly_nse: NSE evaluated with monthly aggregated data (-)
-- max: Maximal peak (m$^{3}$/s)
+The file contains <u>signature indices</u> based on Addor et al. (2018) and listed in Table 1 of Kupzig et al. (2025). Some <u>additional information</u> is given, e.g., to discover unexpected behaviour or relate to other's results. The validation period is used to calculate the below listed metrics:
+- mgn_l: Low flow magnitude [mm/d]
+- mgn_h: High flow magnitude [mm/d]
+- frq_l: Low flow frequency [d]
+- frq_h: High flow frequency [d]
+- dur_l: Low flow duration [d]
+- dur_h: High flow duration [d]
+- lowflow_events: Number of low flow events [-]
+- highflow_events: Number of high flow events [-]
+- monthly_nse: NSE evaluated with monthly aggregated data [-]
+- max: Maximal peak [m$^{3}$/s]
+
+The file can be loaded via R and the command `readRDS`.
+
+**_SI_obs_ref_as_m8_100d_complete_validation_period.rds:_**
+
+The signatures of the observed discharge data. The validation period is used to calculate the below listed metrics:
+- mgn_l: Low flow magnitude [mm/d]
+- mgn_h: High flow magnitude [mm/d]
+- frq_l: Low flow frequency [d]
+- frq_h: High flow frequency [d]
+- dur_l: Low flow duration [d]
+- dur_h: High flow duration [d]
+- lowflow_events: Number of low flow events [-]
+- highflow_events: Number of high flow events [-]
+- monthly_nse: NSE evaluated with monthly aggregated data [-]
+- max: Maximal peak [m$^{3}$/s]
+- sd: standard deviation of the discharge [m$^{3}$/s]
+- mean: mean of the discharge [m$^{3}$/s]
 
 The file can be loaded via R and the command `readRDS`.
 
@@ -68,32 +102,54 @@ The file can be loaded via R and the command `readRDS`.
 
 The file contains <u>characteristics of the basins</u>. The following characteristics are given:
 - grdc_ids: GRDC id of the basin (GRDC, 2020)
-- basin_size: Area of basin in model grid (km$^{2}$)
-- aridity: Aridity Index using information from Zomer & Trabucco (2022) (-)
-- mean_precipitation_as_snow: Average amount of precipitation fallen below 0°C between 1979-1994 (%)
-- localWetlands: With local wetland covered area in basin (%)
-- mean_temperature: Mean temperature in the period 1979-1994 (°C)
-- sum_precipitation: Annual precipitation in the period 1979-1994 (mm)
+- basin_size: Area of basin in model grid [km$^{2}$]
+- aridity: Aridity Index using information from Zomer & Trabucco (2022) [-]
+- mean_precipitation_as_snow: Average amount of precipitation fallen below 0°C between 1979-1994 [%]
+- localWetlands: With local wetland covered area in basin [%]
+- globalLakes:  With global lakes covered area in basin [%]
+- mean_temperature: Mean temperature in the period 1979-1994 [°C]
+- sum_precipitation: Annual precipitation in the period 1979-1994 [mm]
 
 **_overview_map.shp:_**
 
-This is a shape-file which can be loaded by using an GIS, e.g. QGIS. It contains the <u>basin area</u> of all simulated basins, distinguishing between behavioural (defined with "1") and additional basins (defined with "2").
+This is a shape-file which can be loaded by using a GIS, e.g. QGIS. It contains the <u>basin area</u> of all simulated basins, distinguishing between behavioural (defined with "1") and additional basins (defined with "2").
+
+**_calibration_result.shp:_**
+
+This is a shape-file which can be loaded by using a GIS, e.g. QGIS. It contains the <u>KGE value</u> for the calibration period of all simulated basins and for all simulated model setups, namely 12.
+
+**_basin_sets.shp_**:
+This is a shape-file which can be loaded by using a GIS, e.g. QGIS. It contains the <u>indication of which basin set this basin belongs to</u>. In particular:
+- 0 &#8594; river
+- 1 &#8594; reservoir+river
+- 2 &#8594; snow+river
+- 3 &#8594; snow+reservoir+river
+
+**_basins.rds:_**
+Is the flattened matrix of grid cells indicating which grid cell belongs to which basin.
+
+**_res_types.rds:_**
+Is the flattened matrix of grid cells indicating which grid cell has which reservoir type.
+In particular:
+- 0 &#8594; no reservoir
+- 1 &#8594; irrigation reservoir
+- 2-7: &#8594; non-irrigation reservoir
 
 **_reservoir_data.csv:_**
 
 Ths file contains information for all <u>373 simulated reservoirs</u> in the basin set. In detail, the following information is given:
 - grdc-id:  GRDC id of the basin where the reservoir is located(GRDC, 2020)
-- basin-set: Whether the basin is behavioural or additional
+- basin-set: Whether the basin is behavioural or non-behavioural
 - reservoir: Whether the reservoir is irrigation or non-irrigation
 - capacity_km3: The storage capacity of the reservoir (km$^{3}$)
 - surface area_km2: The surface area$^{1}$ of the reservoir (km$^{2}$)
 - mean depth_m: The mean depth of the reservoir calculated with `capacity / surface_area` (m)
 - mean inflow_km3d: The mean inflow to the reservoir, which can be used to define whether the storage capacity is comparable low or high.
 
-$^{1}$_Note that this information is used as integer in WaterGAP3, there for small reservoirs with a surface area < 1km$^{2}$ a zero is written and wihtin the simulation the vertical water balance of the reservoir is neglected._
+$^{1}$_Note that this information is used as integer in WaterGAP3, therefore, for small reservoirs with a surface area < 1km$^{2}$ a zero is written and within the simulation the vertical water balance of the reservoir is neglected._
 
 ## Information of code
-The uploaded code is in the src-folder. Helper functions are placed in the src/helper-folder. The naming of the files is in line with the shown figures in Kupzig & Flörke (2025).
+The uploaded code is in the src-folder. Helper functions are placed in the src/helper-folder. The naming of the files is in line with the shown figures in Kupzig & Flörke (2025). **To create all figures used in the manuscript, create_figures.bat is provided.**
 
  ## References
  Addor, N., Nearing, G., Prieto, C., Newman, A. J., Le Vine, N., & Clark, M. P. (2018). A Ranking of Hydrological Signatures Based on Their Predictability in Space. Water Resources Research, 54(11), 8792–8812. https://doi.org/10.1029/2018WR022606

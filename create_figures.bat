@@ -1,0 +1,11 @@
+C:\"Program Files"\R\R-4.3.1\bin\Rscript.exe %CD%\src\review.figure_2.r
+C:\"Program Files"\R\R-4.3.1\bin\Rscript.exe %CD%\src\review.figure_3_histograms.r
+C:\"Program Files"\R\R-4.3.1\bin\Rscript.exe %CD%\src\review.figure_4_snow.r
+C:\"Program Files"\R\R-4.3.1\bin\Rscript.exe %CD%\src\review.figure_5_reservoirs_histograms.r
+C:\"Program Files"\R\R-4.3.1\bin\Rscript.exe %CD%\src\review.figure_6.r
+C:\"Program Files"\R\R-4.3.1\bin\Rscript.exe %CD%\src\review.figure_7_flowvelocity.r
+C:\"Program Files"\R\R-4.3.1\bin\Rscript.exe %CD%\src\review.appendix_A1a_map_with_calibration_results.r
+C:\"Program Files"\R\R-4.3.1\bin\Rscript.exe %CD%\src\review.appendix_A1b_cdfs.r
+C:\"Program Files"\R\R-4.3.1\bin\Rscript.exe %CD%\src\review.appendix_C12.r
+C:\"Program Files"\R\R-4.3.1\bin\Rscript.exe %CD%\src\review.appendix_C34.r
+C:\"Program Files"\R\R-4.3.1\bin\Rscript.exe %CD%\src\review.appendix_D1234.r

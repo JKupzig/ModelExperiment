@@ -7,13 +7,16 @@ source("./src/helper/read_data.r")
 source("./src/helper/comparison.r")
 source("./src/helper/color_ramps.r")
 
+plot_name <- "./plots/review/appendixA1b_behavioural_characteristics.png"
 
 ATTRIBUTES <- "./data/basin_attributes.txt"
-CHARACTERISTIC_LIST <- c("sum_precipitation", "mean_temperature", "mean_precipitation_as_snow", "aridity")
+CHARACTERISTIC_LIST <- c("sum_precipitation", "mean_temperature", "mean_precipitation_as_snow", "aridity", "localWetlands", "globalLakes")
 LABELS_TO_USE <- c("Annual precipitation [mm]",
                    "Mean temperature [°C]",
                    "Precipitation as snow [%]",
-                   "Aridity Index [-]")
+                   "Aridity Index [-]",
+                   "Local wetlands [%]",
+                   "Global lakes [%]")
 
 
 data_to_plot <- list()
@@ -61,7 +64,7 @@ ggplot(data_all) +
         legend.text = element_text(size=CEX, color="black"),
         legend.title = element_text(size=CEX, color="black"))
 
-ggsave("./plots/review/figure4b_behavioural_characteristics.png",
+ggsave(plot_name,
        dpi = 600, units = "cm", width = 14, height = 14) #height=14
 
 

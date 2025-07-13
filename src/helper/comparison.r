@@ -9,11 +9,20 @@ get_sensitive_basins <- function(name="snow"){
         (attributes$localWetlands > 10)]
   } else if (name == "reservoir") {
     sensitive_basins <- attributes$grdc_ids[attributes$reservoir_area > 0]
+  } else if (name == "non-irrig") {
+    basins <- readRDS("./data/basins.rds")
+    res_types <- readRDS("./data/res_types.rds")
+    basin_with_non_irrig <- unique(basins[!is.na(basins) & res_types %in% 2:7])
+    sensitive_basins <- paste0("X", basin_with_non_irrig)
+    res_area_bigger_0 <- attributes$grdc_ids[attributes$reservoir_area > 0]
+    sensitive_basins <- sensitive_basins[sensitive_basins %in% res_area_bigger_0]
   } else {
     sensitive_basins <- attributes$grdc_ids
   }
   return(sensitive_basins)
 }
+
+
 
 compare_models <- function(cal_results,
                            reference_column,

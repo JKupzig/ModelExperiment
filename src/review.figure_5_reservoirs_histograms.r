@@ -8,10 +8,12 @@ source("./src/helper/read_data.r")
 source("./src/helper/comparison.r")
 
 
-plot_name <- "./plots/review/figure7_reservoirs.png"
+plot_name <- "./plots/review/figure5_reservoirs.png"
 CEX = 7
 behavioural_set <- read_kge_and_define_good_basins()
 sensitive_basins <- get_sensitive_basins("reservoir")
+sensitive_basins_r2 <- get_sensitive_basins("non-irrig")
+
 ROOT_ATTRIBUTES <- "./data/basin_attributes.txt"
 attributes <- read.table(ROOT_ATTRIBUTES, sep = "\t", header = TRUE)
 data <- readRDS("./data/SI_original.rds")
@@ -59,6 +61,15 @@ for (column in columns){
     for (entry in 1:length(names)){
       name <- names[entry]
 
+      if (name == "snow on wetlands"){
+        sensitive_basins <- get_sensitive_basins("snow")
+      } else if (name == "reservoir algorithm (V1)"){
+        sensitive_basins <- get_sensitive_basins("reservoir")
+      } else if (name == "reservoir algorithm (V2)") {
+        sensitive_basins <- get_sensitive_basins("non-irrig")
+      } else {
+        sensitive_basins <- get_sensitive_basins("river")
+      }
       sensitive_data <- data[,,dimnames(data)[[3]] %in% sensitive_basins]
 
       intervals <- intervals_kge
@@ -147,7 +158,7 @@ summarized_values %>%
   scale_fill_manual(values = c(datylon_map[7],datylon_map[5])) +
   theme_bw() +
   theme(
-    legend.position = c(0.055, 0.95), # c(0,0) bottom left, c(1,1) top-right.
+    legend.position = c(0.9, 0.95), # c(0,0) bottom left, c(1,1) top-right.
     legend.background = element_rect(fill = NA, colour = NA),
     legend.title=element_blank(),
     legend.text = element_text(size=CEX, color="black"),
@@ -165,6 +176,47 @@ summarized_values %>%
 
 ggsave(plot_name, dpi = 600, units = "cm", width = 18, height = 12)
 
+summarized_values %>%
+  filter(model_part == "reservoir~algorithm~(V1)") %>%
+  filter(si == "Delta~timing~(Delta~Pearson~r)~'[-]'") %>%
+  filter(interval %in% interval_kge_labels[1:4]) %>%
+  group_by(set) %>%
+  summarise(sum = sum(mean))
 
 
+summarized_values %>%
+  filter(model_part == "reservoir~algorithm~(V1)") %>%
+  filter(si == "Delta~timing~(Delta~Pearson~r)~'[-]'") %>%
+  filter(interval %in% interval_kge_labels[6:9]) %>%
+  group_by(set) %>%
+  summarise(sum = sum(mean))
+
+summarized_values %>%
+  filter(model_part == "reservoir~algorithm~(V1)") %>%
+  filter(si == "Delta~flow~volume~(Delta~alpha)~'[-]'") %>%
+  filter(interval %in% interval_kge_labels[1:4]) %>%
+  group_by(set) %>%
+  summarise(sum = sum(mean))
+
+summarized_values %>%
+  filter(model_part == "reservoir~algorithm~(V1)") %>%
+  filter(si == "Delta~flow~volume~(Delta~alpha)~'[-]'") %>%
+  filter(interval %in% interval_kge_labels[6:9]) %>%
+  group_by(set) %>%
+  summarise(sum = sum(mean))
+
+
+summarized_values %>%
+  filter(model_part == "reservoir~algorithm~(V1)") %>%
+  filter(si == "Delta~variability~(Delta~beta)~'[-]'") %>%
+  filter(interval %in% interval_kge_labels[1:4]) %>%
+  group_by(set) %>%
+  summarise(sum = sum(mean))
+
+summarized_values %>%
+  filter(model_part == "reservoir~algorithm~(V1)") %>%
+  filter(si == "Delta~variability~(Delta~beta)~'[-]'") %>%
+  filter(interval %in% interval_kge_labels[6:9]) %>%
+  group_by(set) %>%
+  summarise(sum = sum(mean))
 
