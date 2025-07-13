@@ -28,17 +28,20 @@ discharge_schneider <- read.table(sprintf(ROOT_SIMULATED, 16), sep = "\t", heade
 complete_period <- as.POSIXct(discharge_hanasaki$date)
 
 count <- 1
-for (basin in unique(all_examine)) {
+for (basin in all_examine){
   plot_name <- sprintf("plots/review/appendixC34_%s.png", basin)
 
-  discharge_observed <- WaterGAPLite::Q.read_grdc(
-    substr(basin, 2, 10),
-    NULL,
-    "na",
-    start = as.Date(min(discharge_hanasaki$date)),
-    end = as.Date(max(discharge_hanasaki$date)),
-    use_folder = ROOT_GRDC
-  )
+  discharge_observed <- tryCatch(
+      WaterGAPLite::Q.read_grdc(
+      substr(basin, 2, 10),
+      NULL,
+      "na",
+      start = as.Date(min(discharge_hanasaki$date)),
+      end = as.Date(max(discharge_hanasaki$date)),
+      use_folder = ROOT_GRDC
+    ),
+    error = function(err) {NULL})
+
 
   ref_high_flow <- median(discharge_reference[[basin]]) * 9
 
@@ -49,7 +52,11 @@ for (basin in unique(all_examine)) {
 
   basin_hanasaki <- discharge_hanasaki[[basin]][period]
   basin_schneider <- discharge_schneider[[basin]][period]
-  basin_observed <- discharge_observed$Value[period]
+  if (!is.null(discharge_observed)){
+    basin_observed <- discharge_observed$Value[period]
+  }else {
+    basin_observed <- NULL
+  }
   basin_reference <- discharge_reference[[basin]][period]
   x_values <- as.POSIXct(discharge_hanasaki$date[period])
 
@@ -87,7 +94,7 @@ for (basin in unique(all_examine)) {
     col = grDevices::adjustcolor(datylon_map[1], alpha.f = alpha), lwd = 2
   )
 
-  if (add_obs[count] == TRUE) {
+  if ((add_obs[count] == TRUE) & !(is.null(basin_observed))) {
     lines(x_values, basin_observed,
       col = grDevices::adjustcolor(datylon_map[8], alpha.f = alpha), lwd = 2
     )

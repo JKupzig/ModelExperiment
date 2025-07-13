@@ -11,8 +11,14 @@ source("./src/helper/read_data.r")
 BASEMAP <- "C:/Users/jenny/MyProject_sciebo_backup/SensitivityAnalysis/ne_110m_land"
 
 cal_result <- sf::st_read("./data/calibration_result.shp")
-wmap <- rgdal::readOGR(dsn = BASEMAP, layer = basename(BASEMAP))
-wmap_robin <- sp::spTransform(wmap, sp::CRS("+proj=robin"))
+
+if (file.exists(BASEMAP)){
+  wmap <- rgdal::readOGR(dsn = BASEMAP, layer = basename(BASEMAP))
+  wmap_robin <- sp::spTransform(wmap, sp::CRS("+proj=robin"))
+} else {
+  cal_result <- as(cal_result, 'Spatial')
+  cal_result <- sp::spTransform(cal_result, sp::CRS("+proj=robin"))
+}
 
 plot_name1 <- "./plots/review/appendixA1a_world_plot.png"
 plot_name2 <- "./plots/review/appendixA1a_histrogram.png"
@@ -36,7 +42,8 @@ cal_result$cal_classes <- cut(cal_result[[model_to_analyse_shortened]],
 CEX <- 10
 world_plot <- ggplot() +
   ggspatial::geom_sf() +
-  ggspatial::geom_sf(data = sf::st_as_sf(wmap_robin), fill = NA, col = "black", size = 0.2, lwd = 0.2) +
+  { if(file.exists(BASEMAP))
+    ggspatial::geom_sf(data = sf::st_as_sf(wmap_robin), fill = NA, col = "black", size = 0.2, lwd = 0.2)}+
   ggspatial::geom_sf(data = sf::st_as_sf(cal_result), aes(fill = cal_classes), lwd = 0.1) +
   coord_sf(
     expand = FALSE,

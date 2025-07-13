@@ -1,5 +1,3 @@
-# Appendix S3
-
 rm(list = ls())
 
 source("./src/helper/read_data.r")

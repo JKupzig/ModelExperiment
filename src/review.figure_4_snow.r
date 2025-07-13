@@ -125,24 +125,26 @@ for (basin in BASINS){
   start <- min(date)
   end <- max(date)
 
-  doy_obs <- rep(NA, length(labels))
-  if (file.exists(ROOT_GRDC)) {
-    observed <- WaterGAPLite::Q.read_grdc(
+  observed <- tryCatch(
+    WaterGAPLite::Q.read_grdc(
       substr(basin, 2, 10),
       NULL,
       "na",
-      start=start,
-      end=end,
-      use_folder=ROOT_GRDC)
+      start = as.Date(min(discharge_hanasaki$date)),
+      end = as.Date(max(discharge_hanasaki$date)),
+      use_folder = ROOT_GRDC
+    ),
+    error = function(err) {NULL})
 
-
-  mean_discharge_obs <- observed %>%
-    mutate(daily_code = format(Date, "%m")) %>%
-    group_by(daily_code) %>%
-    summarize(mean_basin = median(Value, na.rm=T)) %>%
-    filter(daily_code != "02-29")
-
+  if (!is.null(observed)){
+    mean_discharge_obs <- observed %>%
+      mutate(daily_code = format(Date, "%m")) %>%
+      group_by(daily_code) %>%
+      summarize(mean_basin = median(Value, na.rm=T)) %>%
+      filter(daily_code != "02-29")
     doy_obs <- mean_discharge_obs[interesting_months, ]$mean_basin
+  } else {
+    doy_obs <- rep(NA, length(labels))
   }
 
   mean_discharge_no_snow <- sim_data %>%
@@ -166,13 +168,17 @@ for (basin in BASINS){
   png(sprintf(PLOT_PATTERN_2, basin),
       res = 300, units = "cm", width = 18, height = 8)
   par(mai=c(0.5,1,0.1,0.1))
+
   plot(seq_along(labels), doy_obs,
        xlab = "", ylab = ylabel, xaxt = "n",
        ylim = c(min_y, max_y), lwd=1.4, pch = 19, type = "b")
+
   lines(seq_along(labels), doy_no_snow,
         col = datylon_map[2], lwd=1.4, pch = 19, type = "b")
+
   lines(seq_along(labels), doy_snow,
         col = datylon_map[5], lwd=1.4, pch = 19, type = "b")
+
   if (count == 2){
     legend(legend_position_basins,
            legend = c("Observed discharge", "Inactive snow on wetlands",

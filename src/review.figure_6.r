@@ -1,4 +1,3 @@
-# get amount of non-irrigation and irrigation resevroirs with reservoir area
 rm(list = ls())
 
 library(tidyr)

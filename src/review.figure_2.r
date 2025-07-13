@@ -90,8 +90,14 @@ max(data$value[data$name == "Aridity Index [-]"])
 
 # spatially plotting basins
 basin_polygons <- sf::st_read("./data/basin_sets.shp")
-wmap <- rgdal::readOGR(dsn = BASEMAP, layer = basename(BASEMAP))
-wmap_robin <- sp::spTransform(wmap, sp::CRS("+proj=robin"))
+
+if (file.exists(BASEMAP)){
+  wmap <- rgdal::readOGR(dsn = BASEMAP, layer = basename(BASEMAP))
+  wmap_robin <- sp::spTransform(wmap, sp::CRS("+proj=robin"))
+} else {
+  basin_polygons <- as(basin_polygons, 'Spatial')
+  basin_polygons <- sp::spTransform(basin_polygons, sp::CRS("+proj=robin"))
+}
 
 # plotting
 basin_polygons$type <- factor(
@@ -102,7 +108,8 @@ basin_polygons$type <- factor(
 CEX <- 10
 world_plot <- ggplot() +
   ggspatial::geom_sf() +
-  ggspatial::geom_sf(data = sf::st_as_sf(wmap_robin), fill = NA, col = "black", size = 0.2, lwd = 0.2) +
+  { if(file.exists(BASEMAP))
+    ggspatial::geom_sf(data = sf::st_as_sf(wmap_robin), fill = NA, col = "black", size = 0.2, lwd = 0.2)}+
   ggspatial::geom_sf(data = sf::st_as_sf(basin_polygons), aes(fill = type), lwd = 0.1) +
   coord_sf(
     expand = FALSE,

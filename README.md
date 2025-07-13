@@ -1,11 +1,11 @@
 # ModelExperiment
  This repository supports reproducing the findings in Kupzig & Flörke (2025). It mainly consists of the compiled data and
- source-code for evaluating the data. An empty plot-folder is present so that the code can be directly excecuted of the current working directory is specified as the root of the downloaded GitHub-repository.
+ source-code for evaluating the data. An empty plot-folder is present so that the code can be directly excecuted if the current working directory is specified as the root of the downloaded GitHub-repository.
 
 
  ## Definition of model setups
- In the R code, the different model runs as specified using the pattern "m%i_wetland100". This names relates in the following to the
- comparison pairs shown in Table 3 of Kupzig & Flörke (2025):
+ In the R code, the different model runs uses names following the pattern "m%i_wetland100". This names relates to the
+ comparison pairs shown in Table 3 of Kupzig & Flörke (2025) in the following form:
 
  - m8  &#8594; S0, V0, R0
  - m9  &#8594; S1, V0, R0
@@ -35,12 +35,26 @@
  - ggspatial (1.1.9) - CRAN
  - sf (1.0-14) - CRAN
 
-Please note that the libraries for spatial data sp and rgdal are outdated. They can be easily replaced by using the library `terra`. However, as this work is partially done by a HPC using an older R version we've decided to stick to the outdated libraries for compatibility reason.
+Please note that the libraries for spatial data sp and rgdal are outdated. They can be easily replaced by
+using the library `terra`. However, as this work is partially done by a HPC using an older R version we've
+ decided to stick to the outdated libraries for compatibility reason.
 
-The library WaterGAPLite is only used to load the GRDC data, so the download and installation is not mandatory to run the code. The function can be easily replaced by a self-written function for loading the GRDC files.
+The library WaterGAPLite is only used to load the GRDC data, so the download and installation
+is not mandatory to run the code. The function can be easily replaced by a self-written function for loading the GRDC files.
 
-## Information of uploaded data
-This folder contains several files that are required to reproduce the findings published in Kupzig & Flörke (2025). Note that observed discharge, i.e., GRDC data, is not part of the repository as well as the background layer for displaying the landmass (shown in Figure 1). The code is written in a manner that it is still excecutable without showing the missing information. The missing information are all open source and can be retrieved under the dollowing adresses:
+## Information about code: 'src'
+The uploaded code is in the src-folder. Helper functions are placed in the src/helper-folder.
+The naming of the files is in line with the shown figures in Kupzig & Flörke (2025).
+**To create all figures used in the manuscript, create_figures.bat is provided.**
+
+## Information of uploaded data: 'data'
+This folder contains several files that are required to reproduce the findings published in Kupzig & Flörke (2025).
+Note that observed discharge, i.e., GRDC data, is not part of the repository as well as the background layer
+for displaying the landmass (shown in Figure 2 and A1).
+
+The code is written in a manner that it is still
+excecutable without showing the missing information. The missing information are all
+open source and can be retrieved under the dollowing adresses:
 - GRDC data: https://grdc.bafg.de/
 - landmass-borders: https://www.naturalearthdata.com/downloads/110m-physical-vectors/110m-land/
 
@@ -148,8 +162,6 @@ Ths file contains information for all <u>373 simulated reservoirs</u> in the bas
 
 $^{1}$_Note that this information is used as integer in WaterGAP3, therefore, for small reservoirs with a surface area < 1km$^{2}$ a zero is written and within the simulation the vertical water balance of the reservoir is neglected._
 
-## Information of code
-The uploaded code is in the src-folder. Helper functions are placed in the src/helper-folder. The naming of the files is in line with the shown figures in Kupzig & Flörke (2025). **To create all figures used in the manuscript, create_figures.bat is provided.**
 
  ## References
  Addor, N., Nearing, G., Prieto, C., Newman, A. J., Le Vine, N., & Clark, M. P. (2018). A Ranking of Hydrological Signatures Based on Their Predictability in Space. Water Resources Research, 54(11), 8792–8812. https://doi.org/10.1029/2018WR022606

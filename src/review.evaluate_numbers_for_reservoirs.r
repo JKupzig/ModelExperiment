@@ -1,5 +1,3 @@
-# Figure 4
-
 rm(list = ls())
 
 library(dplyr)
